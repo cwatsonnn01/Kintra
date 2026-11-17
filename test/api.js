@@ -26,7 +26,7 @@ server.listen(0, async () => {
     const lv = t.classes[0].roster.map((r) => r.risk);
     ok(lv.includes('high') && lv.includes('ok'), 'roster mixed risk ' + lv);
     const a = await call('admin', 'GET', '/api/bootstrap');
-    ok(a.body.counts.high >= 2 && a.body.counts.students === 18, 'admin counts ' + JSON.stringify(a.body.counts));
+    ok(a.body.counts.high >= 2 && a.body.counts.students === 19, 'admin counts ' + JSON.stringify(a.body.counts));
     // levels + foundations
     ok(s.labels.theme === 'orbit' && s.recaps.some((r) => r.foundations.length) && Object.keys(s.foundations).length > 3, 'foundations for grade 10');
     ok((await call('kid', 'POST', '/api/login', { email: 'kinder@orbitlearn.demo', password: 'demo1234' })).status === 200, 'kinder login');
@@ -112,6 +112,16 @@ server.listen(0, async () => {
     ok((await call('admin', 'POST', '/api/settings', { brand: { mascot: 'bear', mascotName: 'Northview Bears', primary: '#AA0000', secondary: 'nope', useColors: true, seasonal: true } })).status === 200, 'brand saved');
     const br = (await call('student', 'GET', '/api/bootstrap')).body.school.brand;
     ok(br.mascot === 'bear' && br.primary === '#AA0000' && br.secondary === '#F5B700', 'brand validated ' + JSON.stringify(br));
+    // family view: children, switching, prefs
+    const fam = (await call('parent', 'GET', '/api/bootstrap')).body;
+    ok(fam.children.length === 2 && fam.labels.theme === 'family', 'parent has two children');
+    const emma = fam.children.find((k) => k.name === 'Emma Brooks');
+    ok((await call('parent', 'POST', '/api/child', { id: emma.id })).status === 200, 'switch child');
+    const fam2 = (await call('parent', 'GET', '/api/bootstrap')).body;
+    ok(fam2.student.name === 'Emma Brooks' && fam2.classes.some((c) => c.id === 'kroom'), 'sees Emma');
+    ok((await call('parent', 'POST', '/api/child', { id: Object.keys(tb.students)[1] })).status === 403, 'cannot switch to another family');
+    ok((await call('parent', 'POST', '/api/prefs', { lang: 'fr', digest: false })).body.prefs.lang === 'fr', 'prefs saved');
+    ok((await call('parent', 'POST', '/api/prefs', { lang: 'xx' })).body.prefs.lang === 'fr', 'bad lang ignored');
     console.log('PASS', pass);
   } catch (e) { console.error('FAIL after', pass, e.message); process.exitCode = 1; }
   server.close(); process.exit();

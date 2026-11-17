@@ -53,9 +53,9 @@
   const isKid = () => theme() === 'kinder';
   function setTheme() {
     const t = 't-' + theme();
-    if (!document.body.classList.contains(t)) { document.body.classList.remove('t-orbit', 't-kinder', 't-pro'); document.body.classList.add(t); }
+    if (!document.body.classList.contains(t)) { document.body.classList.remove('t-orbit', 't-kinder', 't-pro', 't-family'); document.body.classList.add(t); }
     applyBrand();
-    const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 't-kinder' ? '#FFF7EC' : t === 't-pro' ? '#0A0B10' : '#06071A';
+    const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 't-family' ? '#F6F5F1' : t === 't-kinder' ? '#FFF7EC' : t === 't-pro' ? '#0A0B10' : '#06071A';
   }
   function speak(text) {
     if (!('speechSynthesis' in window)) return toast('Read-aloud isn’t available in this browser.');
@@ -99,7 +99,7 @@
     if (role === 'student' && L.level === 'kinder') return [['home', 'My day', 'home'], ['vault', 'My lessons', 'book'], ['assistant', 'Ask Orbit', 'spark'], ['assignments', 'My jobs', 'star']];
     if (role === 'board') return [['home', 'Board overview', 'home'], ['review', 'Review planner', 'book'], ['messages', 'Messages', 'mail'], ['announcements', 'Announcements', 'mega']];
     if (role === 'student') return [['home', 'Home', 'home'], ['map', 'My map', 'orbit'], ['assignments', 'Assignments', 'clip'], ['vault', 'Study Vault', 'book'], ['assistant', 'Orbit AI', 'spark'], ['meetings', 'Meetings', 'cal'], ['announcements', 'Announcements', 'mega']];
-    if (role === 'parent') return [['home', 'Home', 'home'], ['map', 'Learning map', 'orbit'], ['assignments', 'Homework', 'clip'], ['vault', 'Class recaps', 'book'], ['messages', 'Messages', 'mail'], ['meetings', 'Meetings', 'cal'], ['community', L.community, 'users'], ['announcements', 'Announcements', 'mega']];
+    if (role === 'parent') { const tr = (x) => (NAV_T[lang()] || {})[x] || x; return [['home', tr('Home'), 'home'], ['messages', tr('Messages'), 'mail'], ['meetings', tr('Meetings'), 'cal'], ['assignments', tr('Homework'), 'clip'], ['vault', tr('What they learned'), 'book'], ['map', tr('Learning map'), 'orbit'], ['community', tr(L.community), 'users'], ['announcements', tr('Announcements'), 'mega']]; }
     if (role === 'teacher') return [['home', 'Home', 'home'], ...S.classes.map((c) => [`class/${c.id}`, c.name, 'class']), ['messages', 'Messages', 'mail'], ['meetings', 'Meetings', 'cal'], ['announcements', 'Announcements', 'mega']];
     return [['home', 'School overview', 'home'], ['gaps', 'Learning gaps', 'ladder'], ['messages', 'Messages', 'mail'], ['announcements', 'Announcements', 'mega'], ['email', 'Email log', 'mail'], ['meetings', 'Meetings', 'cal'], ['settings', 'Settings', 'gear']];
   }
@@ -148,7 +148,7 @@
   function page(key, r) {
     const role = S.me.role;
     const P = {
-      home: () => (role === 'student' ? (S.labels.level === 'kinder' ? kinderHome() : studentHome()) : role === 'parent' ? parentHome() : role === 'teacher' ? teacherHome() : role === 'board' ? boardHome() : adminHome()),
+      home: () => (role === 'student' ? (S.labels.level === 'kinder' ? kinderHome() : studentHome()) : role === 'parent' ? familyHome(r.q) : role === 'teacher' ? teacherHome() : role === 'board' ? boardHome() : adminHome()),
       assignments: () => assignmentsPage(),
       foundation: () => foundationPage(r.parts[1], r.q.from),
       map: () => mapPage(),
@@ -442,6 +442,71 @@
   }
 
   // ---------- parent ----------
+  // ---------- family view (parents) ----------
+  const FT = {
+    en: { week: '{n}’s week', ok: 'On track', watch: 'Needs a little help', high: 'Needs support', sOk: '{n} is on track this week. Nice work!', sWatch: '{n} needs a little help this week, mostly in {s}.', sHigh: '{n} needs some extra support this week in {s}. The steps below are the best place to start.', sKid: '{n} had a great week in kindergarten!', todos: 'Your to-dos this week', tMeet: 'Book a 15-minute chat with {t}', tHand: 'Help {n} hand in “{a}” ({s})', tAsk: 'Ask {n} at dinner: “What does ‘{k}’ mean?”', tRefresh: 'Do a 4-minute refresher together: {f}', tKidJob: 'Help {n} with “{a}”', tKidListen: 'Listen to today’s lesson together: {r}', none: 'Nothing to do this week. Enjoy it!', coming: 'Coming up', due: 'due {d}', nothingDue: 'Nothing due soon.', att: 'Attendance', miss: 'Missing work', avg: 'Average', jobs: 'Jobs done', stars: 'Stars this week', grades: 'Grades', homework: 'Homework', learned: 'What they learned', news: 'School news', prefs: 'Your settings', lang: 'Language', digest: 'Email me a short summary every Sunday', preview: 'Preview this week’s email', note: 'Lesson content stays in the language the teacher wrote it in.', open: 'Open', book: 'Book', go: 'Go', children: 'Your children', subj: '{n}’s week at {sch}', hi: 'Hi {p},', sign: 'From OrbitLearn, on behalf of {sch}', dinner: 'Ask at dinner', shout: 'Shoutouts', mOk: 'Doing well', mWatch: 'A little help', mHigh: 'Extra support' },
+    fr: { week: 'La semaine de {n}', ok: 'Tout va bien', watch: 'Un petit coup de main', high: 'Besoin de soutien', sOk: '{n} est sur la bonne voie cette semaine. Bravo!', sWatch: '{n} a besoin d’un petit coup de main cette semaine, surtout en {s}.', sHigh: '{n} a besoin d’un soutien supplémentaire cette semaine en {s}. Les étapes ci-dessous sont le meilleur point de départ.', sKid: '{n} a passé une super semaine à la maternelle!', todos: 'Vos tâches cette semaine', tMeet: 'Réservez un appel de 15 minutes avec {t}', tHand: 'Aidez {n} à remettre « {a} » ({s})', tAsk: 'Au souper, demandez à {n} : « Que veut dire “{k}”? »', tRefresh: 'Faites ensemble une révision de 4 minutes : {f}', tKidJob: 'Aidez {n} avec « {a} »', tKidListen: 'Écoutez ensemble la leçon du jour : {r}', none: 'Rien à faire cette semaine. Profitez-en!', coming: 'À venir', due: 'pour le {d}', nothingDue: 'Rien à remettre bientôt.', att: 'Présence', miss: 'Travaux manquants', avg: 'Moyenne', jobs: 'Tâches faites', stars: 'Étoiles cette semaine', grades: 'Notes', homework: 'Devoirs', learned: 'Ce qu’il a appris', news: 'Nouvelles de l’école', prefs: 'Vos préférences', lang: 'Langue', digest: 'M’envoyer un court résumé chaque dimanche', preview: 'Aperçu du courriel de la semaine', note: 'Le contenu des leçons reste dans la langue de l’enseignant.', open: 'Ouvrir', book: 'Réserver', go: 'Aller', children: 'Vos enfants', subj: 'La semaine de {n} à {sch}', hi: 'Bonjour {p},', sign: 'De la part d’OrbitLearn, pour {sch}', dinner: 'À demander au souper', shout: 'Bravos', mOk: 'Ça va bien', mWatch: 'Petit coup de main', mHigh: 'Soutien' },
+    es: { week: 'La semana de {n}', ok: 'Va bien', watch: 'Necesita un poco de ayuda', high: 'Necesita apoyo', sOk: '{n} va bien esta semana. ¡Buen trabajo!', sWatch: '{n} necesita un poco de ayuda esta semana, sobre todo en {s}.', sHigh: '{n} necesita apoyo adicional esta semana en {s}. Los pasos de abajo son el mejor lugar para empezar.', sKid: '¡{n} tuvo una gran semana en el kínder!', todos: 'Sus tareas esta semana', tMeet: 'Reserve una charla de 15 minutos con {t}', tHand: 'Ayude a {n} a entregar “{a}” ({s})', tAsk: 'En la cena, pregúntele a {n}: “¿Qué significa ‘{k}’?”', tRefresh: 'Hagan juntos un repaso de 4 minutos: {f}', tKidJob: 'Ayude a {n} con “{a}”', tKidListen: 'Escuchen juntos la lección de hoy: {r}', none: 'Nada que hacer esta semana. ¡Disfrútela!', coming: 'Próximamente', due: 'para el {d}', nothingDue: 'Nada pendiente pronto.', att: 'Asistencia', miss: 'Tareas faltantes', avg: 'Promedio', jobs: 'Tareas hechas', stars: 'Estrellas esta semana', grades: 'Notas', homework: 'Tareas', learned: 'Lo que aprendió', news: 'Noticias de la escuela', prefs: 'Sus preferencias', lang: 'Idioma', digest: 'Enviarme un resumen corto cada domingo', preview: 'Ver el correo de esta semana', note: 'El contenido de las lecciones queda en el idioma en que lo escribió el maestro.', open: 'Abrir', book: 'Reservar', go: 'Ir', children: 'Sus hijos', subj: 'La semana de {n} en {sch}', hi: 'Hola {p}:', sign: 'De OrbitLearn, en nombre de {sch}', dinner: 'Para preguntar en la cena', shout: 'Felicitaciones', mOk: 'Va bien', mWatch: 'Un poco de ayuda', mHigh: 'Apoyo' },
+  };
+  const NAV_T = { fr: { Home: 'Accueil', 'Learning map': 'Carte d’apprentissage', Homework: 'Devoirs', 'What they learned': 'Ce qu’il a appris', Messages: 'Messages', Meetings: 'Rencontres', 'Parent hub': 'Espace parents', Announcements: 'Annonces' }, es: { Home: 'Inicio', 'Learning map': 'Mapa de aprendizaje', Homework: 'Tareas', 'What they learned': 'Lo que aprendió', Messages: 'Mensajes', Meetings: 'Reuniones', 'Parent hub': 'Espacio de padres', Announcements: 'Anuncios' } };
+  const lang = () => (S && S.prefs && FT[S.prefs.lang]) ? S.prefs.lang : 'en';
+  const ft = (k, v = {}) => (FT[lang()][k] || FT.en[k]).replace(/\{(\w+)\}/g, (_, x) => v[x] ?? '');
+  const gl = (k) => (lang() === 'en' ? k.gradeLabel : k.grade === 0 ? (lang() === 'fr' ? 'Maternelle' : 'Kínder') : k.grade === 13 ? (lang() === 'fr' ? 'Université' : 'Universidad') : lang() === 'fr' ? `${k.grade}e année` : `Grado ${k.grade}`);
+  const fdate = (d) => new Date(d + 'T12:00:00').toLocaleDateString(lang() === 'en' ? 'en-CA' : lang() === 'fr' ? 'fr-CA' : 'es', { weekday: 'short', month: 'short', day: 'numeric' });
+  function familyData() {
+    const kid = S.student; const n = first(kid.name); const isK = kid.grade === 0;
+    const pc = S.risk.perClass || [];
+    const weak = pc.filter((p) => (p.average != null && p.average < 70) || p.missing.length || p.absences >= 2).map((p) => cls(p.classId)).filter(Boolean);
+    const subs = [...new Set(weak.map((c) => c.subject))];
+    const sList = subs.length > 1 ? subs.slice(0, -1).join(', ') + (lang() === 'en' ? ' and ' : lang() === 'fr' ? ' et ' : ' y ') + subs.slice(-1) : subs[0] || '';
+    const level = isK ? 'ok' : S.risk.level;
+    const sentence = isK ? ft('sKid', { n }) : level === 'ok' ? ft('sOk', { n }) : ft(level === 'high' ? 'sHigh' : 'sWatch', { n, s: sList });
+    const todos = [];
+    const hasMeeting = (S.meetings || []).some((m) => m.status !== 'declined' && m.studentId === kid.id);
+    if (!isK && level !== 'ok' && !hasMeeting && weak[0]) { const t = (S.teachers || []).find((x) => x.id === weak[0].teacherId); todos.push({ id: 'meet-' + weak[0].id, text: ft('tMeet', { t: t ? t.name : weak[0].subject }), href: '#/meetings', cta: ft('book') }); }
+    S.assignments.filter((a) => a.state === 'missing').slice(0, 2).forEach((a) => todos.push({ id: 'hand-' + a.id, text: ft(isK ? 'tKidJob' : 'tHand', { n, a: a.title, s: (cls(a.classId) || {}).subject }), href: '#/assignments', cta: ft('open') }));
+    if (isK) { const j = S.assignments.find((a) => a.state === 'todo'); if (j) todos.push({ id: 'job-' + j.id, text: ft('tKidJob', { n, a: j.title }), href: '#/assignments', cta: ft('open') }); const r = S.recaps[0]; if (r) todos.push({ id: 'listen-' + r.id, text: ft('tKidListen', { r: r.title }), href: `#/vault/${r.id}`, cta: ft('open') }); }
+    else {
+      const fr = S.recaps.find((r) => (r.foundations || []).length); const f = fr && S.foundations[fr.foundations[0]];
+      if (level !== 'ok' && f && todos.length < 3) todos.push({ id: 'ref-' + f.id, text: ft('tRefresh', { f: `${f.title} (${f.gradeLabel})` }), href: `#/foundation/${f.id}?from=${fr.id}`, cta: ft('go') });
+    }
+    const r0 = S.recaps[0]; const term = r0 && r0.keyTerms[0];
+    const ask = !isK && term ? { text: ft('tAsk', { n, k: term.term.toLowerCase() }), subject: cls(r0.classId).subject, answer: term.definition } : null;
+    const upcoming = S.assignments.filter((a) => a.state === 'todo').sort((a, b) => a.due.localeCompare(b.due)).slice(0, 3);
+    const att = pc.length ? Math.round(pc.reduce((x, p) => x + p.attendanceRate, 0) / pc.length) : null;
+    return { kid, n, isK, level, sentence, todos: todos.slice(0, 3), ask, upcoming, att, missing: S.assignments.filter((a) => a.state === 'missing').length, done: S.assignments.filter((a) => a.state === 'submitted' || a.state === 'graded').length };
+  }
+  const weekKey = () => { const d = new Date(); const j = new Date(d.getFullYear(), 0, 1); return d.getFullYear() + '-' + Math.ceil(((d - j) / 864e5 + j.getDay() + 1) / 7); };
+  function todoDone(id) { try { return localStorage.getItem('ol-todo-' + S.me.id + weekKey() + id) === '1'; } catch (e) { return false; } }
+  function childSwitcher() {
+    const ks = S.children || []; if (ks.length < 2) return '';
+    return `<div class="kids" role="tablist" aria-label="${esc(ft('children'))}">${ks.map((k) => `<button role="tab" aria-selected="${k.id === S.student.id}" class="kid ${k.id === S.student.id ? 'on' : ''}" data-act="child" data-id="${esc(k.id)}"><span class="avatar">${esc(initials(k.name))}</span><span><b>${esc(first(k.name))}</b><span class="tiny">${esc(gl(k))}</span></span><i class="kdot ${k.risk}" aria-label="${esc(ft(k.risk === 'ok' ? 'mOk' : k.risk === 'high' ? 'mHigh' : 'mWatch'))}"></i></button>`).join('')}</div>`;
+  }
+  function familyHome(q) {
+    const D = familyData();
+    const tab = q.tab || 'homework';
+    const tabs = D.isK ? [['homework', ft('homework')], ['learned', ft('learned')], ['news', ft('news')]] : [['grades', ft('grades')], ['homework', ft('homework')], ['learned', ft('learned')], ['news', ft('news')]];
+    const body = { grades: () => classProgress(), homework: () => assignmentRows(S.assignments.filter((a) => a.state !== 'graded').sort((a, b) => a.due.localeCompare(b.due)), false), learned: () => recapCards(S.recaps, 6), news: () => `${announceList(S.announcements, 5)}<h3 style="margin-top:18px">${esc(ft('shout'))}</h3>${shoutoutList(S.shoutouts)}` }[tabs.some((t) => t[0] === tab) ? tab : tabs[0][0]]();
+    return `${urgentStrip()}${childSwitcher()}
+      <div class="fhero card"><div class="fh-top"><div><h1>${esc(ft('week', { n: D.n }))}</h1><p class="muted">${esc(gl(D.kid))} · ${esc(S.school.name)}</p></div><span class="fstatus ${D.level}"><i></i>${esc(ft(D.level))}</span></div>
+        <p class="fsentence">${esc(D.sentence)}</p>
+        <div class="fstats">${D.isK ? `<div><b>${D.att ?? '–'}%</b><span>${esc(ft('att'))}</span></div><div><b>${D.done}</b><span>${esc(ft('jobs'))}</span></div><div><b>⭐ ${D.done + 1}</b><span>${esc(ft('stars'))}</span></div>` : `<div><b>${D.att ?? '–'}%</b><span>${esc(ft('att'))}</span></div><div><b class="${D.missing ? 'bad' : ''}">${D.missing}</b><span>${esc(ft('miss'))}</span></div><div><b>${S.risk.overall == null ? '–' : S.risk.overall + '%'}</b><span>${esc(ft('avg'))}</span></div>`}</div></div>
+      <div class="fgrid">
+        <div class="card"><h2>${esc(ft('todos'))}</h2>${D.todos.length ? `<div class="todos">${D.todos.map((t) => `<div class="todo ${todoDone(t.id) ? 'done' : ''}"><label><input type="checkbox" data-act="todo" data-id="${esc(t.id)}" ${todoDone(t.id) ? 'checked' : ''}><span>${esc(t.text)}</span></label><a class="btn ghost sm" href="${esc(t.href)}">${esc(t.cta)}</a></div>`).join('')}</div>` : `<p class="empty">${esc(ft('none'))}</p>`}
+          ${D.ask ? `<div class="dinner"><span class="tiny">${esc(ft('dinner'))} · ${esc(D.ask.subject)}</span><p>${esc(D.ask.text)}</p><details><summary class="small">${lang() === 'fr' ? 'Voir la réponse' : lang() === 'es' ? 'Ver la respuesta' : 'See the answer'}</summary><p class="small muted">${esc(D.ask.answer)}</p></details></div>` : ''}</div>
+        <div class="card"><h2>${esc(ft('coming'))}</h2>${D.upcoming.length ? `<div class="list">${D.upcoming.map((a) => `<div class="row"><div class="main">${subj(cls(a.classId))}<div><b>${esc(a.title)}</b></div></div><span class="small muted">${esc(ft('due', { d: fdate(a.due) }))}</span></div>`).join('')}</div>` : `<p class="empty">${esc(ft('nothingDue'))}</p>`}</div>
+      </div>
+      <div class="card section"><nav class="tabs" style="margin-top:0">${tabs.map(([k, l]) => `<a href="#/home?tab=${k}" class="${(tabs.some((t) => t[0] === tab) ? tab : tabs[0][0]) === k ? 'on' : ''}">${esc(l)}</a>`).join('')}</nav>${body}</div>
+      <form class="card section fprefs" data-form="prefs"><h2>${esc(ft('prefs'))}</h2>
+        <div class="formrow"><div><label for="fl">${esc(ft('lang'))}</label><select id="fl" name="lang" data-act-change="prefs">${[['en', 'English'], ['fr', 'Français'], ['es', 'Español']].map(([v, l]) => `<option value="${v}" ${lang() === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <div style="display:flex;flex-direction:column;justify-content:flex-end"><label class="check"><input type="checkbox" name="digest" data-act-change="prefs" ${S.prefs.digest !== false ? 'checked' : ''}> ${esc(ft('digest'))}</label></div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px"><button type="button" class="btn ghost sm" data-act="digest">${icon('mail')} ${esc(ft('preview'))}</button><span class="tiny muted">${esc(ft('note'))}</span></div></form>`;
+  }
+  function digestPreview() {
+    const D = familyData();
+    const lines = [ft('hi', { p: first(S.me.name) }), '', D.sentence, '', ft('todos') + ':', ...(D.todos.length ? D.todos.map((t) => '• ' + t.text) : ['• ' + ft('none')]), '', ft('coming') + ':', ...(D.upcoming.length ? D.upcoming.map((a) => `• ${a.title} (${(cls(a.classId) || {}).subject}), ${ft('due', { d: fdate(a.due) })}`) : ['• ' + ft('nothingDue')]), ...(D.ask ? ['', ft('dinner') + ':', D.ask.text] : []), '', ft('sign', { sch: S.school.name })];
+    modal(`<h2>${esc(ft('subj', { n: D.n, sch: S.school.name }))}</h2><p class="tiny muted">${esc(S.me.email)}</p><div class="email">${esc(lines.join('\n'))}</div><div style="margin-top:14px"><button class="btn" data-close>OK</button></div>`);
+  }
   function parentHome() {
     const s = S.student;
     const hw = S.assignments.filter((a) => a.state === 'todo' || a.state === 'missing');
@@ -983,6 +1048,11 @@
   }
 
   // ---------- events ----------
+  document.addEventListener('change', async (e) => {
+    const f = e.target.closest('[data-act-change=prefs]'); if (!f) return;
+    const form = f.form; const body = { lang: form.lang.value, digest: form.digest.checked };
+    try { const r = await api('/api/prefs', body); S.prefs = r.prefs; render(); if (e.target.name === 'digest') toast(body.digest ? 'Weekly summary on' : 'Weekly summary off'); } catch (err) { toast(err.message); }
+  });
   document.addEventListener('click', async (e) => {
     const t = e.target.closest('[data-act]');
     if (!t) { if (panelOpen && !e.target.closest('.panel')) { panelOpen = false; render(); } return; }
@@ -994,6 +1064,9 @@
       else if (act === 'bell') { panelOpen = !panelOpen; render(); if (panelOpen && S.notifications.some((n) => !n.read)) { await api('/api/notifications/read', {}); S.notifications.forEach((n) => (n.read = true)); } }
       else if (act === 'listen') { e.preventDefault(); e.stopPropagation(); speak(t.dataset.text); }
       else if (act === 'season') playSeason(null, true);
+      else if (act === 'child') { await api('/api/child', { id: t.dataset.id }); await refresh(); }
+      else if (act === 'todo') { const on = t.checked; try { localStorage.setItem('ol-todo-' + S.me.id + weekKey() + t.dataset.id, on ? '1' : '0'); } catch (err) { /* storage unavailable */ } t.closest('.todo').classList.toggle('done', on); }
+      else if (act === 'digest') digestPreview();
       else if (act === 'fxclose') { const k = t.closest('.puncard'); if (k && k._end) k._end(); }
       else if (act === 'preview') playSeason(t.dataset.k, true);
       else if (act === 'look') lookModal(S.classes.find((x) => x.id === t.dataset.class));

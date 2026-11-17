@@ -79,6 +79,9 @@ function addLevels(db) {
     add({ role: 'parent', name: p, childId: s.id, email: i === 0 ? 'kparent@orbitlearn.demo' : `${p.split(' ')[0].toLowerCase()}.kparent@orbitlearn.demo` });
     kidIds.push(s.id);
   });
+  // Dana Brooks has two children: Tyler (Grade 10) and Emma (Kindergarten), to show the family child switcher.
+  const dana = db.users.find((u) => u.email === 'parent@orbitlearn.demo');
+  if (dana) { const emma = add({ role: 'student', name: 'Emma Brooks', grade: 0, email: 'emma.k@orbitlearn.demo' }); kidIds.push(emma.id); dana.childIds = [dana.childId, emma.id]; }
   const unis = [['Jordan', 'Reyes'], ['Amara', 'Okoye'], ['Ben', 'Thompson'], ['Sana', 'Malik']];
   const uniIds = unis.map(([f, l], i) => add({ role: 'student', name: `${f} ${l}`, grade: 13, email: i === 0 ? 'uni@orbitlearn.demo' : `${f.toLowerCase()}.u@orbitlearn.demo` }).id);
   db.enrollments.kroom = kidIds;

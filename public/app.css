@@ -393,3 +393,54 @@ input[type=color]{padding:4px;height:44px;cursor:pointer}
 @keyframes punin{from{opacity:0;transform:translateY(20px) scale(.96)}}
 .seasonchip span{display:inline}
 @media (max-width:860px){.inbox{grid-template-columns:1fr}.threads{border-right:0;border-bottom:1px solid var(--line);max-height:260px}.seasonchip span{display:none}}
+
+/* family theme: calm, light, plain language for parents */
+.t-family {
+  --bg:#F6F5F1; --bg-2:#FFFFFF; --card:#FFFFFF; --card-2:#F1EFE9; --solid:#FFFFFF;
+  --line:#E7E3DA; --line-2:#D8D2C6;
+  --ink:#1F2433; --ink-2:#434A5E; --ink-3:#646a7c;
+  --brand:#3B5BDB; --brand-ink:#2F4AC0; --teal:#0E7C7E; --pink:#C2255C; --sun:#E8A33D;
+  --ok:#2B7A3B; --ok-soft:#E5F3E8; --watch:#9A5A07; --watch-soft:#FFF1DB; --high:#B42318; --high-soft:#FDECEA;
+  --grad:linear-gradient(115deg,#0E7C7E,#3B5BDB);
+  --glow:0 6px 18px rgba(31,36,51,.10); --shadow:0 1px 2px rgba(31,36,51,.05),0 8px 24px rgba(31,36,51,.05);
+  --r:18px; --r-sm:12px;
+  --display:"Inter",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
+  --blur:none; --aurora-a:transparent; --aurora-b:transparent; --aurora-c:transparent;
+  color-scheme:light; font-size:16px;
+}
+.t-family #stars,.t-family .aurora{display:none}
+.t-family .btn,.t-family .btn:hover,.t-family .msg.me,.t-family .avatar,.t-family .flash .f,.t-family .rung{color:#fff}
+.t-family .btn.ghost,.t-family .btn.ghost:hover{color:var(--ink);background:#fff}
+.t-family .side{background:#fff;border-right:1px solid var(--line)}
+.t-family .side nav a.on{background:#EEF1FC;color:var(--brand-ink)}
+.t-family .side nav a.on::before{background:var(--brand)}
+.t-family .stat .l,.t-family th,.t-family .levelchip,.t-family .brief .who-ai,.t-family .ai-chip{font-family:var(--body);text-transform:none;letter-spacing:0}
+.t-family input[type=text],.t-family input[type=email],.t-family input[type=search],.t-family select,.t-family textarea,.t-family input[type=password]{background:#fff}
+.t-family tbody tr:hover td{background:#FAF9F6}
+.t-family h1{font-weight:700;letter-spacing:-.025em}
+.kids{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.kid{display:flex;gap:10px;align-items:center;padding:8px 14px 8px 8px;border-radius:999px;border:1px solid var(--line-2);background:#fff;cursor:pointer;color:var(--ink);text-align:left;min-height:52px;position:relative}
+.kid b{display:block;font-size:15px} .kid .tiny{color:var(--ink-3)}
+.kid.on{border-color:var(--brand);box-shadow:0 0 0 3px rgba(59,91,219,.15)}
+.kdot{width:10px;height:10px;border-radius:50%;margin-left:4px} .kdot.ok{background:var(--ok)} .kdot.watch{background:var(--sun)} .kdot.high{background:var(--high)}
+.fhero{padding:24px 26px}
+.fh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.fh-top h1{margin:0;font-size:clamp(28px,4vw,38px)}
+.fstatus{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-weight:600;font-size:14px}
+.fstatus i{width:9px;height:9px;border-radius:50%;background:currentColor}
+.fstatus.ok{background:var(--ok-soft);color:var(--ok)} .fstatus.watch{background:var(--watch-soft);color:var(--watch)} .fstatus.high{background:var(--high-soft);color:var(--high)}
+.fsentence{font-size:clamp(18px,2.2vw,21px);line-height:1.45;margin:14px 0 18px;max-width:760px;color:var(--ink)}
+.fstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fstats div{background:var(--card-2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column}
+.fstats b{font-size:24px;font-weight:700} .fstats b.bad{color:var(--high)} .fstats span{font-size:13.5px;color:var(--ink-3)}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.todos{display:flex;flex-direction:column;gap:10px}
+.todo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px}
+.todo label{display:flex;gap:12px;align-items:flex-start;margin:0;font-weight:500;font-size:16px;color:var(--ink);cursor:pointer}
+.todo input{width:22px;height:22px;margin-top:1px;accent-color:var(--brand);flex:none}
+.todo.done span{text-decoration:line-through;color:var(--ink-3)}
+.dinner{margin-top:14px;padding:14px 16px;border-radius:14px;background:#EEF1FC}
+.dinner .tiny{font-weight:600;color:var(--brand-ink);text-transform:uppercase;letter-spacing:.05em}
+.dinner p{margin:4px 0 6px;font-size:17px;font-weight:600}
+.fprefs .check{font-size:15px}
+@media (max-width:860px){.fgrid{grid-template-columns:1fr}.fhero{padding:20px}.fstats b{font-size:20px}.todo{flex-wrap:wrap}.todo .btn{margin-left:34px}}

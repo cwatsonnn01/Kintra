@@ -41,6 +41,7 @@ function save() {
 load();
 
 const sessions = new Map(); // token -> userId
+const sessionChild = new Map(); // token -> selected child for parents with more than one
 
 // ---------- helpers ----------
 const user = (uid) => db.users.find((u) => u.id === uid);
@@ -49,7 +50,7 @@ const pub = (u) => u && ({ id: u.id, name: u.name, role: u.role, email: u.email,
 const teaches = (u, c) => c.teacherId === u.id || c.coTeacherId === u.id;
 const studentClasses = (sid) => db.classes.filter((c) => (db.enrollments[c.id] || []).includes(sid));
 const teacherClasses = (u) => db.classes.filter((c) => teaches(u, c));
-const parentsOf = (sid) => db.users.filter((u) => u.role === 'parent' && u.childId === sid);
+const parentsOf = (sid) => db.users.filter((u) => u.role === 'parent' && (u.childId === sid || (u.childIds || []).includes(sid)));
 const labels = (lvl = db.school.level) => {
   if (lvl === 'kinder') lvl = 'kinder';
   return {
@@ -154,7 +155,7 @@ function rosterFor(c) {
 
 function bootstrap(u) {
   const base = {
-    me: pub(u), school: db.school, labels: labels(viewerLevel(u)),
+    me: pub(u), prefs: user(u.id).prefs || { lang: 'en', digest: true }, school: db.school, labels: labels(viewerLevel(u)),
     notifications: db.notifications.filter((n) => n.userId === u.id).slice(0, 50),
     teachers: db.users.filter((x) => x.role === 'teacher').map(pub),
   };
@@ -163,6 +164,8 @@ function bootstrap(u) {
   if (u.role === 'parent') {
     Object.assign(base, studentView(u.childId));
     classIds = base.classes.map((c) => c.id);
+    base.labels = { ...base.labels, theme: 'family' };
+    base.children = (u.childIds || [u.childId]).map((cid) => { const k = user(cid); const r = risk.assess(db, cid); return { ...pub(k), risk: r.level }; });
     base.community = db.community.filter((p) => classIds.includes(p.classId)).map((p) => ({ ...p, author: user(p.authorId).name, replies: p.replies.map((r) => ({ ...r, author: user(r.authorId).name })) })).sort((a, b) => b.createdAt - a.createdAt);
   }
   if (u.role === 'teacher') {
@@ -211,7 +214,17 @@ const routes = {
     sessions.set(token, u.id);
     return { ok: true, cookie: token };
   },
-  'POST /api/logout': (b, u, token) => { sessions.delete(token); return { ok: true, cookie: '' }; },
+  'POST /api/logout': (b, u, token) => { sessions.delete(token); sessionChild.delete(token); return { ok: true, cookie: '' }; },
+  'POST /api/child': (b, u, token) => {
+    if (u.role !== 'parent' || !(u.childIds || [u.childId]).includes(b.id)) throw httpErr(403, 'Not your child');
+    sessionChild.set(token, b.id);
+    return { ok: true };
+  },
+  'POST /api/prefs': (b, u) => {
+    const real = user(u.id);
+    real.prefs = { ...(real.prefs || {}), ...(['en', 'fr', 'es'].includes(b.lang) ? { lang: b.lang } : {}), ...(typeof b.digest === 'boolean' ? { digest: b.digest } : {}) };
+    return { ok: true, prefs: real.prefs };
+  },
   'GET /api/bootstrap': (b, u) => bootstrap(u),
 
   'POST /api/attendance': (b, u) => {
@@ -523,7 +536,8 @@ function api(rq, rs, url) {
       if (raw) { try { body = JSON.parse(raw); } catch { return send(400, { error: 'Bad JSON' }); } }
       if (rq.method === 'POST' && rq.headers['content-type'] && !rq.headers['content-type'].includes('application/json')) return send(415, { error: 'JSON only' });
       const token = cookieToken(rq);
-      const u = token && sessions.has(token) ? user(sessions.get(token)) : null;
+      let u = token && sessions.has(token) ? user(sessions.get(token)) : null;
+      if (u && u.role === 'parent' && sessionChild.has(token) && (u.childIds || []).includes(sessionChild.get(token))) u = { ...u, childId: sessionChild.get(token) };
       if (key !== 'POST /api/login' && !u) return send(401, { error: 'Please sign in.' });
       const out = fn(body, u, token);
       if (rq.method === 'POST' && key !== 'POST /api/login' && key !== 'POST /api/logout') save();
