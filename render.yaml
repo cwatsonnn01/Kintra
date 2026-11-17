@@ -1,7 +1,7 @@
 # Render Blueprint: Kintra demo as a free web service. No database or paid plan needed.
 services:
   - type: web
-    name: orbitlearn
+    name: kintra
     runtime: node
     plan: free
     buildCommand: echo "No dependencies to install"
