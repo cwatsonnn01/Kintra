@@ -1,4 +1,4 @@
-/* OrbitLearn front end: one small vanilla-JS app, hash routing, server-rendered data from /api/bootstrap. */
+/* Kintra front end: one small vanilla-JS app, hash routing, server-rendered data from /api/bootstrap. */
 (function () {
   'use strict';
   const app = document.getElementById('app');
@@ -45,17 +45,22 @@
   let logoN = 0;
   function logo() {
     const n = ++logoN;
-    return `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lc${n}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EE6D6"/><stop offset=".55" stop-color="#7C6CFF"/><stop offset="1" stop-color="#FF6FB5"/></linearGradient><radialGradient id="lg${n}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="18" fill="#090B22"/><ellipse cx="32" cy="33" rx="25" ry="9" fill="none" stroke="url(#lc${n})" stroke-width="2.4" opacity=".5" transform="rotate(-24 32 33)"/><circle cx="32" cy="32" r="12" fill="url(#lc${n})"/><circle cx="32" cy="32" r="12" fill="url(#lg${n})"/><path d="M9.6 41.7a25 9 -24 0 0 45-18" fill="none" stroke="url(#lc${n})" stroke-width="2.4" stroke-linecap="round"/><g><circle cx="53.4" cy="22.6" r="3.6" fill="#FFC46B"/><animateTransform attributeName="transform" type="rotate" values="0 32 32;-14 32 32;0 32 32" dur="6s" repeatCount="indefinite"/></g></svg>`;
+    void n;
+    return '<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="17" fill="#141B3C"/><g stroke="#F6F6FA" stroke-width="4.2" stroke-linecap="round" fill="none"><path d="M22 15V49"/><path d="M22 34L42 17"/><path d="M30.5 27L43 48"/></g><circle cx="22" cy="15" r="4.6" fill="#B9B3F5"/><circle cx="42" cy="17" r="5.4" fill="#7B6FF0"/><circle cx="43" cy="48" r="5.4" fill="#5FB89C"/><circle cx="22" cy="49" r="4.6" fill="#F6F6FA"/></svg>';
   }
-  const brand = () => `<a class="brand" href="#/home">${logo()}<span>Orbit<span class="gtext">Learn</span></span></a>`;
-  const initials = (n) => String(n || '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-  const theme = () => (S && S.labels && S.labels.theme) || 'orbit';
+  const wordmark = () => '<span class="wm">k<span class="i">ı<b></b></span>ntra</span>';
+  const brand = () => `<a class="brand" href="#/home" aria-label="Kintra home">${logo()}${wordmark()}</a>`;
+  const initials = (n) => String(n || '?').split(',')[0].trim().split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const prefersDark = () => { try { return localStorage.getItem('kintra-dark') === '1'; } catch (e) { return false; } };
+  const baseTheme = () => (S && S.labels && S.labels.theme) || 'orbit';
+  const theme = () => { const t = baseTheme(); return t !== 'kinder' && S && prefersDark() ? 'pro' : t; };
+  const isDark = () => theme() === 'pro';
   const isKid = () => theme() === 'kinder';
   function setTheme() {
     const t = 't-' + theme();
     if (!document.body.classList.contains(t)) { document.body.classList.remove('t-orbit', 't-kinder', 't-pro', 't-family'); document.body.classList.add(t); }
     applyBrand();
-    const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 't-family' ? '#F6F5F1' : t === 't-kinder' ? '#FFF7EC' : t === 't-pro' ? '#0A0B10' : '#06071A';
+    const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = t === 't-kinder' ? '#F7F5FF' : t === 't-pro' ? '#0E1330' : '#141B3C';
   }
   function speak(text) {
     if (!('speechSynthesis' in window)) return toast('Read-aloud isn’t available in this browser.');
@@ -96,9 +101,9 @@
 
   function navFor(role) {
     const L = S.labels;
-    if (role === 'student' && L.level === 'kinder') return [['home', 'My day', 'home'], ['vault', 'My lessons', 'book'], ['assistant', 'Ask Orbit', 'spark'], ['assignments', 'My jobs', 'star']];
+    if (role === 'student' && L.level === 'kinder') return [['home', 'My day', 'home'], ['vault', 'My lessons', 'book'], ['assistant', 'Ask Kintra', 'spark'], ['assignments', 'My jobs', 'star']];
     if (role === 'board') return [['home', 'Board overview', 'home'], ['review', 'Review planner', 'book'], ['messages', 'Messages', 'mail'], ['announcements', 'Announcements', 'mega']];
-    if (role === 'student') return [['home', 'Home', 'home'], ['map', 'My map', 'orbit'], ['assignments', 'Assignments', 'clip'], ['vault', 'Study Vault', 'book'], ['assistant', 'Orbit AI', 'spark'], ['meetings', 'Meetings', 'cal'], ['announcements', 'Announcements', 'mega']];
+    if (role === 'student') return [['home', 'Home', 'home'], ['map', 'My map', 'orbit'], ['assignments', 'Assignments', 'clip'], ['vault', 'Study Vault', 'book'], ['assistant', 'Kintra Assist', 'spark'], ['meetings', 'Meetings', 'cal'], ['announcements', 'Announcements', 'mega']];
     if (role === 'parent') { const tr = (x) => (NAV_T[lang()] || {})[x] || x; return [['home', tr('Home'), 'home'], ['messages', tr('Messages'), 'mail'], ['meetings', tr('Meetings'), 'cal'], ['assignments', tr('Homework'), 'clip'], ['vault', tr('What they learned'), 'book'], ['map', tr('Learning map'), 'orbit'], ['community', tr(L.community), 'users'], ['announcements', tr('Announcements'), 'mega']]; }
     if (role === 'teacher') return [['home', 'Home', 'home'], ...S.classes.map((c) => [`class/${c.id}`, c.name, 'class']), ['messages', 'Messages', 'mail'], ['meetings', 'Meetings', 'cal'], ['announcements', 'Announcements', 'mega']];
     return [['home', 'School overview', 'home'], ['gaps', 'Learning gaps', 'ladder'], ['messages', 'Messages', 'mail'], ['announcements', 'Announcements', 'mega'], ['email', 'Email log', 'mail'], ['meetings', 'Meetings', 'cal'], ['settings', 'Settings', 'gear']];
@@ -130,6 +135,7 @@
           <div class="top">
             <span class="levelchip"><span class="pulse"></span>${esc(levelName)} · live demo</span>
             <div class="actions">
+              ${baseTheme() !== 'kinder' && baseTheme() !== 'pro' ? `<button class="btn ghost sm darktoggle" data-act="dark" aria-label="${prefersDark() ? 'Switch to light mode' : 'Switch to Midnight mode'}" title="${prefersDark() ? 'Light mode' : 'Midnight mode'}">${prefersDark() ? '☀️' : '🌙'}</button>` : ''}
               ${brandOf().seasonal ? `<button class="btn ghost sm seasonchip" data-act="season" title="Play this season’s surprise">${SEASONS[seasonKey()].icon || '🕊️'} <span>${esc(SEASONS[seasonKey()].label)}</span></button>` : ''}
               <div class="bell"><button class="btn ghost sm" data-act="bell" aria-label="Notifications, ${unread} unread" aria-expanded="${panelOpen}">${icon('bell')}</button>${unread ? `<span class="count">${unread}</span>` : ''}
                 ${panelOpen ? `<div class="panel" role="dialog" aria-label="Notifications">${S.notifications.length ? S.notifications.map((n) => `<a class="n ${n.read ? '' : 'unread'}" href="${esc(n.link || '#/home')}"><b>${esc(n.title)}</b><div class="small muted">${esc(n.body)}</div><div class="tiny muted">${ago(n.createdAt)}</div></a>`).join('') : '<div class="empty" style="padding:12px">No notifications yet.</div>'}</div>` : ''}
@@ -173,39 +179,40 @@
   // ---------- login ----------
   function renderLogin(err = '') {
     const P = [
-      ['kinder', 'k', 'Mia, 5', 'Kindergarten · Little Orbit'],
-      ['student', '', 'Tyler, 15', 'Grade 10 · high school'],
+      ['kinder', 'k', 'Mia, 5', 'Kindergarten · Kintra Kids'],
+      ['student', '', 'Tyler, 15', 'Grade 10 student'],
       ['uni', 'u', 'Jordan, 20', 'University · BIO 201'],
-      ['parent', '', 'Dana Brooks', 'Parent · Tyler’s mom'],
+      ['parent', '', 'Dana Brooks', 'Parent of Tyler & Emma'],
       ['teacher', '', 'Ms. Rivera', 'Teacher · Biology & English'],
       ['admin', '', 'Principal Grant', 'School principal'],
       ['board', 'b', 'Dr. Okoye', 'Superintendent · school board'],
     ];
+    const M = [
+      ['Learn', 'book', '#6457D9', 'Recaps, study tools, knowledge maps and Foundations.'],
+      ['Manage', 'clip', '#3E6FD8', 'Attendance, assignments, grades and classes.'],
+      ['Connect', 'mail', '#2B8A70', 'Family view, messages, meetings and announcements.'],
+      ['Insight', 'ladder', '#D98E1F', 'Learning gaps for classes, schools and the board.'],
+      ['Flow', 'bolt', '#C93C6E', 'Early alerts, approvals and follow-ups, automated.'],
+      ['Assist', 'spark', '#8E84F4', 'AI study help and briefings for every role.'],
+    ];
     app.innerHTML = `
-    <div class="login">
-      <section class="pitch">
+    <div class="login2">
+      <section class="hero">
         ${brand()}
-        <div>
-          <span class="ai-chip">${icon('spark')} AI classroom · K to university</span>
-          <h1>Every student, <span class="gtext">in orbit.</span></h1>
-        </div>
-        <p class="lede">One AI platform that grows with a learner from their first day of kindergarten to their last university lecture. It spots who’s slipping before report cards, turns every class into a study guide, and when a topic gets hard, it reaches back to the earlier lesson that makes it click.</p>
-        <div class="system" aria-hidden="true"><div class="core"></div><div class="ring"><span>AI recaps</span></div><div class="ring"><span>Foundations Bridge</span></div><div class="ring"><span>Early alerts</span></div></div>
-        <div class="feat">
-          <div><b>Foundations Bridge</b>Stuck on cellular respiration? Orbit pulls the Grade 3 and Grade 9 lessons that build up to it.</div>
-          <div><b>Grows with every age</b>Big, read-aloud lessons for 5-year-olds. Focused lecture digests for university.</div>
-          <div><b>Early alerts</b>Absences, low grades and missing work reach families with a plan and a meeting link.</div>
-          <div><b>A lifelong vault</b>Every recap, flashcard and quiz is saved, so exam prep is one click.</div>
-        </div>
+        <div><p class="eyebrow">One connected platform for education</p>
+          <h1>Everything education. <span>Beautifully connected.</span></h1></div>
+        <p class="lede">Learning, school management and your whole community in one place, from the first classroom to the final degree. Kintra spots the gap before the grade, and brings students, families, teachers and boards onto the same page.</p>
+        <div class="mods">${M.map(([n, ic, c, d]) => `<div class="mod"><span class="mi" style="background:${c}">${icon(ic)}</span><b>Kintra ${n}</b><span>${d}</span></div>`).join('')}</div>
+        <p class="foot">Less complexity. More connection. Better education. · Kintra by Framelight Tech</p>
       </section>
       <section class="pane">
-        <div><h2 style="font-size:24px">Step inside</h2><p class="muted">Pick a person. The whole interface changes with their age and role.</p></div>
+        <div><h2>Step inside the demo</h2><p class="muted" style="margin:6px 0 0">Pick a person. Kintra adapts to every age and role.</p></div>
         <div class="demos">
           ${P.map(([role, k, n, d]) => `<button class="demo" data-act="demo" data-role="${role}"><span class="avatar ${k}">${esc(initials(n))}</span><span><b>${esc(n)}</b><span>${esc(d)}</span></span></button>`).join('')}
         </div>
         <details class="signin card"${err ? ' open' : ''}><summary>Sign in with email</summary>
           <form data-form="login" style="margin-top:6px">
-            <label for="em">Email</label><input id="em" name="email" type="email" autocomplete="username" required placeholder="student@orbitlearn.demo">
+            <label for="em">Email</label><input id="em" name="email" type="email" autocomplete="username" required placeholder="student@kintra.demo">
             <label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required placeholder="demo1234">
             <p class="err" role="alert">${esc(err)}</p>
             <button class="btn" type="submit">Sign in</button>
@@ -257,7 +264,7 @@
 
   // ---------- AI briefing ----------
   function brief(text, href, label) {
-    return `<div class="brief"><div class="orb"></div><div><div class="who-ai">${isKid() ? 'Orbit says' : 'Orbit AI briefing'}</div><p>${text}</p></div>${href ? `<a class="btn ghost sm" href="${esc(href)}">${esc(label)}</a>` : ''}</div>`;
+    return `<div class="brief"><div class="orb"></div><div><div class="who-ai">${isKid() ? 'Kintra says' : 'Kintra Assist'}</div><p>${text}</p></div>${href ? `<a class="btn ghost sm" href="${esc(href)}">${esc(label)}</a>` : ''}</div>`;
   }
   function studentBrief() {
     const miss = S.assignments.filter((a) => a.state === 'missing');
@@ -319,7 +326,7 @@
   function studentHome() {
     const upcoming = S.assignments.filter((a) => a.state === 'todo' || a.state === 'missing').slice(0, 5);
     return `${urgentStrip()}
-      <div class="hero-greet"><div><h1>Hey ${esc(first(S.me.name))}, <span class="gtext">let’s go.</span></h1><p class="muted">${esc(S.me.gradeLabel || '')} · ${esc(S.school.name)}</p></div><a class="btn" href="#/assistant">${icon('spark')} Ask Orbit AI</a></div>
+      <div class="hero-greet"><div><h1>Hey ${esc(first(S.me.name))}, <span class="gtext">let’s go.</span></h1><p class="muted">${esc(S.me.gradeLabel || '')} · ${esc(S.school.name)}</p></div><a class="btn" href="#/assistant">${icon('spark')} Ask Kintra Assist</a></div>
       ${checkBanner()}
       ${studentBrief()}
       ${riskBanner('student')}
@@ -400,7 +407,7 @@
     return `<a href="#/vault" class="small noprint">← Study Vault</a>
       <div class="hero-greet" style="margin-top:8px"><div>${subj(c)}<h1 style="margin-top:6px">${esc(c.subject)} exam study guide</h1><p class="muted">Built from ${rs.length} class recaps · ${terms.length} key terms · ${qs.length} practice questions</p></div>
       <button class="btn ghost noprint" data-act="print">${icon('print')} Print / save as PDF</button></div>
-      ${(() => { const ids = [...new Set(rs.flatMap((r) => r.foundations || []))].slice(0, 4); const anchor = rs.find((r) => (r.foundations || []).length); return ids.length ? `${brief(`Before the test, Orbit found <b>${ids.length} earlier-grade lessons</b> these topics are built on. If a recap feels confusing, the gap is usually in one of these.`)}${foundationsPanel(ids, anchor && anchor.id, 'Before the test: refresh the foundations')}` : ''; })()}
+      ${(() => { const ids = [...new Set(rs.flatMap((r) => r.foundations || []))].slice(0, 4); const anchor = rs.find((r) => (r.foundations || []).length); return ids.length ? `${brief(`Before the test, Kintra found <b>${ids.length} earlier-grade lessons</b> these topics are built on. If a recap feels confusing, the gap is usually in one of these.`)}${foundationsPanel(ids, anchor && anchor.id, 'Before the test: refresh the foundations')}` : ''; })()}
       <div class="card section"><h2>What we covered</h2>${rs.map((r) => `<h3 style="margin-top:12px">${esc(r.title)} <span class="tiny muted">${fmtDate(r.date)}</span></h3><ul class="small">${r.summary.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`).join('') || '<div class="empty">No recaps yet.</div>'}</div>
       <div class="card section"><h2>All key terms</h2><dl class="terms">${terms.map((k) => `<dt>${esc(k.term)}</dt><dd>${esc(k.definition)}</dd>`).join('')}</dl></div>
       <div class="card section noprint"><h2>Flashcard review</h2>${flashGrid(rs.flatMap((r) => r.flashcards))}</div>
@@ -414,8 +421,8 @@
     const t0 = (S.recaps[0] && S.recaps[0].title) || subjects[0];
     const ideas = lv === 'kinder' ? ['What is a seed?', 'Quiz me on shapes', 'Tell me about counting']
       : [`Explain ${t0} simply`, `What is ${((S.recaps[0] || {}).keyTerms || [{ term: 'a key term' }])[0].term.toLowerCase()}?`, `Make flashcards for ${subjects[0]}`, `Quiz me on ${subjects[1] || subjects[0]}`, `I don't get ${t0}`];
-    if (!chat.length) chat.push({ who: 'bot', text: lv === 'kinder' ? `Hi ${first(S.me.name)}! I'm Orbit. Ask me anything about what we learned today!` : `Hi ${first(S.me.name)}. I'm Orbit, your AI study partner. I know everything from your class recaps. Ask a question, ask for flashcards or a quiz, or tell me what you don't get and I'll take you back to the lesson it's built on.` });
-    return `<div class="chathead"><div class="orb lg"></div><div><h1 style="margin:0">${lv === 'kinder' ? 'Ask Orbit' : 'Orbit AI'}</h1><p class="muted" style="margin:0">${lv === 'kinder' ? 'Your friendly learning buddy.' : 'Studies from your own class recaps. It won’t do your homework, but it’ll get you ready for it.'}</p></div></div>
+    if (!chat.length) chat.push({ who: 'bot', text: lv === 'kinder' ? `Hi ${first(S.me.name)}! I'm Kintra. Ask me anything about what we learned today!` : `Hi ${first(S.me.name)}. I'm Kintra, your AI study partner. I know everything from your class recaps. Ask a question, ask for flashcards or a quiz, or tell me what you don't get and I'll take you back to the lesson it's built on.` });
+    return `<div class="chathead"><div class="orb lg"></div><div><h1 style="margin:0">${lv === 'kinder' ? 'Ask Kintra' : 'Kintra Assist'}</h1><p class="muted" style="margin:0">${lv === 'kinder' ? 'Your friendly learning buddy.' : 'Studies from your own class recaps. It won’t do your homework, but it’ll get you ready for it.'}</p></div></div>
       <div class="card"><div class="chat" id="chat">${chat.map(chatMsg).join('')}</div>
         <div class="chips" style="margin-top:12px">${ideas.map((t) => `<button class="chip" data-act="ask" data-q="${esc(t)}">${esc(t)}</button>`).join('')}</div>
         <form class="chatform" data-form="chat"><label class="sr" for="cq">Your question</label><input id="cq" name="q" type="text" placeholder="${lv === 'kinder' ? 'Type or tap a bubble…' : 'Ask anything from class…'}" autocomplete="off" required><button class="btn" type="submit">${icon('spark')} Send</button></form>
@@ -444,9 +451,9 @@
   // ---------- parent ----------
   // ---------- family view (parents) ----------
   const FT = {
-    en: { week: '{n}’s week', ok: 'On track', watch: 'Needs a little help', high: 'Needs support', sOk: '{n} is on track this week. Nice work!', sWatch: '{n} needs a little help this week, mostly in {s}.', sHigh: '{n} needs some extra support this week in {s}. The steps below are the best place to start.', sKid: '{n} had a great week in kindergarten!', todos: 'Your to-dos this week', tMeet: 'Book a 15-minute chat with {t}', tHand: 'Help {n} hand in “{a}” ({s})', tAsk: 'Ask {n} at dinner: “What does ‘{k}’ mean?”', tRefresh: 'Do a 4-minute refresher together: {f}', tKidJob: 'Help {n} with “{a}”', tKidListen: 'Listen to today’s lesson together: {r}', none: 'Nothing to do this week. Enjoy it!', coming: 'Coming up', due: 'due {d}', nothingDue: 'Nothing due soon.', att: 'Attendance', miss: 'Missing work', avg: 'Average', jobs: 'Jobs done', stars: 'Stars this week', grades: 'Grades', homework: 'Homework', learned: 'What they learned', news: 'School news', prefs: 'Your settings', lang: 'Language', digest: 'Email me a short summary every Sunday', preview: 'Preview this week’s email', note: 'Lesson content stays in the language the teacher wrote it in.', open: 'Open', book: 'Book', go: 'Go', children: 'Your children', subj: '{n}’s week at {sch}', hi: 'Hi {p},', sign: 'From OrbitLearn, on behalf of {sch}', dinner: 'Ask at dinner', shout: 'Shoutouts', mOk: 'Doing well', mWatch: 'A little help', mHigh: 'Extra support' },
-    fr: { week: 'La semaine de {n}', ok: 'Tout va bien', watch: 'Un petit coup de main', high: 'Besoin de soutien', sOk: '{n} est sur la bonne voie cette semaine. Bravo!', sWatch: '{n} a besoin d’un petit coup de main cette semaine, surtout en {s}.', sHigh: '{n} a besoin d’un soutien supplémentaire cette semaine en {s}. Les étapes ci-dessous sont le meilleur point de départ.', sKid: '{n} a passé une super semaine à la maternelle!', todos: 'Vos tâches cette semaine', tMeet: 'Réservez un appel de 15 minutes avec {t}', tHand: 'Aidez {n} à remettre « {a} » ({s})', tAsk: 'Au souper, demandez à {n} : « Que veut dire “{k}”? »', tRefresh: 'Faites ensemble une révision de 4 minutes : {f}', tKidJob: 'Aidez {n} avec « {a} »', tKidListen: 'Écoutez ensemble la leçon du jour : {r}', none: 'Rien à faire cette semaine. Profitez-en!', coming: 'À venir', due: 'pour le {d}', nothingDue: 'Rien à remettre bientôt.', att: 'Présence', miss: 'Travaux manquants', avg: 'Moyenne', jobs: 'Tâches faites', stars: 'Étoiles cette semaine', grades: 'Notes', homework: 'Devoirs', learned: 'Ce qu’il a appris', news: 'Nouvelles de l’école', prefs: 'Vos préférences', lang: 'Langue', digest: 'M’envoyer un court résumé chaque dimanche', preview: 'Aperçu du courriel de la semaine', note: 'Le contenu des leçons reste dans la langue de l’enseignant.', open: 'Ouvrir', book: 'Réserver', go: 'Aller', children: 'Vos enfants', subj: 'La semaine de {n} à {sch}', hi: 'Bonjour {p},', sign: 'De la part d’OrbitLearn, pour {sch}', dinner: 'À demander au souper', shout: 'Bravos', mOk: 'Ça va bien', mWatch: 'Petit coup de main', mHigh: 'Soutien' },
-    es: { week: 'La semana de {n}', ok: 'Va bien', watch: 'Necesita un poco de ayuda', high: 'Necesita apoyo', sOk: '{n} va bien esta semana. ¡Buen trabajo!', sWatch: '{n} necesita un poco de ayuda esta semana, sobre todo en {s}.', sHigh: '{n} necesita apoyo adicional esta semana en {s}. Los pasos de abajo son el mejor lugar para empezar.', sKid: '¡{n} tuvo una gran semana en el kínder!', todos: 'Sus tareas esta semana', tMeet: 'Reserve una charla de 15 minutos con {t}', tHand: 'Ayude a {n} a entregar “{a}” ({s})', tAsk: 'En la cena, pregúntele a {n}: “¿Qué significa ‘{k}’?”', tRefresh: 'Hagan juntos un repaso de 4 minutos: {f}', tKidJob: 'Ayude a {n} con “{a}”', tKidListen: 'Escuchen juntos la lección de hoy: {r}', none: 'Nada que hacer esta semana. ¡Disfrútela!', coming: 'Próximamente', due: 'para el {d}', nothingDue: 'Nada pendiente pronto.', att: 'Asistencia', miss: 'Tareas faltantes', avg: 'Promedio', jobs: 'Tareas hechas', stars: 'Estrellas esta semana', grades: 'Notas', homework: 'Tareas', learned: 'Lo que aprendió', news: 'Noticias de la escuela', prefs: 'Sus preferencias', lang: 'Idioma', digest: 'Enviarme un resumen corto cada domingo', preview: 'Ver el correo de esta semana', note: 'El contenido de las lecciones queda en el idioma en que lo escribió el maestro.', open: 'Abrir', book: 'Reservar', go: 'Ir', children: 'Sus hijos', subj: 'La semana de {n} en {sch}', hi: 'Hola {p}:', sign: 'De OrbitLearn, en nombre de {sch}', dinner: 'Para preguntar en la cena', shout: 'Felicitaciones', mOk: 'Va bien', mWatch: 'Un poco de ayuda', mHigh: 'Apoyo' },
+    en: { week: '{n}’s week', ok: 'On track', watch: 'Needs a little help', high: 'Needs support', sOk: '{n} is on track this week. Nice work!', sWatch: '{n} needs a little help this week, mostly in {s}.', sHigh: '{n} needs some extra support this week in {s}. The steps below are the best place to start.', sKid: '{n} had a great week in kindergarten!', todos: 'Your to-dos this week', tMeet: 'Book a 15-minute chat with {t}', tHand: 'Help {n} hand in “{a}” ({s})', tAsk: 'Ask {n} at dinner: “What does ‘{k}’ mean?”', tRefresh: 'Do a 4-minute refresher together: {f}', tKidJob: 'Help {n} with “{a}”', tKidListen: 'Listen to today’s lesson together: {r}', none: 'Nothing to do this week. Enjoy it!', coming: 'Coming up', due: 'due {d}', nothingDue: 'Nothing due soon.', att: 'Attendance', miss: 'Missing work', avg: 'Average', jobs: 'Jobs done', stars: 'Stars this week', grades: 'Grades', homework: 'Homework', learned: 'What they learned', news: 'School news', prefs: 'Your settings', lang: 'Language', digest: 'Email me a short summary every Sunday', preview: 'Preview this week’s email', note: 'Lesson content stays in the language the teacher wrote it in.', open: 'Open', book: 'Book', go: 'Go', children: 'Your children', subj: '{n}’s week at {sch}', hi: 'Hi {p},', sign: 'From Kintra, on behalf of {sch}', dinner: 'Ask at dinner', shout: 'Shoutouts', mOk: 'Doing well', mWatch: 'A little help', mHigh: 'Extra support' },
+    fr: { week: 'La semaine de {n}', ok: 'Tout va bien', watch: 'Un petit coup de main', high: 'Besoin de soutien', sOk: '{n} est sur la bonne voie cette semaine. Bravo!', sWatch: '{n} a besoin d’un petit coup de main cette semaine, surtout en {s}.', sHigh: '{n} a besoin d’un soutien supplémentaire cette semaine en {s}. Les étapes ci-dessous sont le meilleur point de départ.', sKid: '{n} a passé une super semaine à la maternelle!', todos: 'Vos tâches cette semaine', tMeet: 'Réservez un appel de 15 minutes avec {t}', tHand: 'Aidez {n} à remettre « {a} » ({s})', tAsk: 'Au souper, demandez à {n} : « Que veut dire “{k}”? »', tRefresh: 'Faites ensemble une révision de 4 minutes : {f}', tKidJob: 'Aidez {n} avec « {a} »', tKidListen: 'Écoutez ensemble la leçon du jour : {r}', none: 'Rien à faire cette semaine. Profitez-en!', coming: 'À venir', due: 'pour le {d}', nothingDue: 'Rien à remettre bientôt.', att: 'Présence', miss: 'Travaux manquants', avg: 'Moyenne', jobs: 'Tâches faites', stars: 'Étoiles cette semaine', grades: 'Notes', homework: 'Devoirs', learned: 'Ce qu’il a appris', news: 'Nouvelles de l’école', prefs: 'Vos préférences', lang: 'Langue', digest: 'M’envoyer un court résumé chaque dimanche', preview: 'Aperçu du courriel de la semaine', note: 'Le contenu des leçons reste dans la langue de l’enseignant.', open: 'Ouvrir', book: 'Réserver', go: 'Aller', children: 'Vos enfants', subj: 'La semaine de {n} à {sch}', hi: 'Bonjour {p},', sign: 'De la part d’Kintra, pour {sch}', dinner: 'À demander au souper', shout: 'Bravos', mOk: 'Ça va bien', mWatch: 'Petit coup de main', mHigh: 'Soutien' },
+    es: { week: 'La semana de {n}', ok: 'Va bien', watch: 'Necesita un poco de ayuda', high: 'Necesita apoyo', sOk: '{n} va bien esta semana. ¡Buen trabajo!', sWatch: '{n} necesita un poco de ayuda esta semana, sobre todo en {s}.', sHigh: '{n} necesita apoyo adicional esta semana en {s}. Los pasos de abajo son el mejor lugar para empezar.', sKid: '¡{n} tuvo una gran semana en el kínder!', todos: 'Sus tareas esta semana', tMeet: 'Reserve una charla de 15 minutos con {t}', tHand: 'Ayude a {n} a entregar “{a}” ({s})', tAsk: 'En la cena, pregúntele a {n}: “¿Qué significa ‘{k}’?”', tRefresh: 'Hagan juntos un repaso de 4 minutos: {f}', tKidJob: 'Ayude a {n} con “{a}”', tKidListen: 'Escuchen juntos la lección de hoy: {r}', none: 'Nada que hacer esta semana. ¡Disfrútela!', coming: 'Próximamente', due: 'para el {d}', nothingDue: 'Nada pendiente pronto.', att: 'Asistencia', miss: 'Tareas faltantes', avg: 'Promedio', jobs: 'Tareas hechas', stars: 'Estrellas esta semana', grades: 'Notas', homework: 'Tareas', learned: 'Lo que aprendió', news: 'Noticias de la escuela', prefs: 'Sus preferencias', lang: 'Idioma', digest: 'Enviarme un resumen corto cada domingo', preview: 'Ver el correo de esta semana', note: 'El contenido de las lecciones queda en el idioma en que lo escribió el maestro.', open: 'Abrir', book: 'Reservar', go: 'Ir', children: 'Sus hijos', subj: 'La semana de {n} en {sch}', hi: 'Hola {p}:', sign: 'De Kintra, en nombre de {sch}', dinner: 'Para preguntar en la cena', shout: 'Felicitaciones', mOk: 'Va bien', mWatch: 'Un poco de ayuda', mHigh: 'Apoyo' },
   };
   const NAV_T = { fr: { Home: 'Accueil', 'Learning map': 'Carte d’apprentissage', Homework: 'Devoirs', 'What they learned': 'Ce qu’il a appris', Messages: 'Messages', Meetings: 'Rencontres', 'Parent hub': 'Espace parents', Announcements: 'Annonces' }, es: { Home: 'Inicio', 'Learning map': 'Mapa de aprendizaje', Homework: 'Tareas', 'What they learned': 'Lo que aprendió', Messages: 'Mensajes', Meetings: 'Reuniones', 'Parent hub': 'Espacio de padres', Announcements: 'Anuncios' } };
   const lang = () => (S && S.prefs && FT[S.prefs.lang]) ? S.prefs.lang : 'en';
@@ -730,7 +737,7 @@
           <div class="chat" id="chat">${conv.length ? conv.map((m) => `<div class="msg ${m.from === S.me.id ? 'me' : 'bot'}">${esc(m.body)}<div class="tiny" style="opacity:.65;margin-top:4px">${ago(m.at)}</div></div>`).join('') : `<div class="empty">Say hello to ${esc(first(sel.name))}.</div>`}</div>
           <form class="chatform" data-form="message" data-to="${esc(sel.id)}"><label class="sr" for="mb">Message</label><input id="mb" name="body" type="text" autocomplete="off" required placeholder="Write a message…"><button class="btn">${icon('mail')} Send</button></form>` : '<div class="empty">No one to message yet.</div>'}</div>
       </div>
-      <p class="tiny muted section">Messages are between adults only: staff, families, the principal and the board. Students get help from Orbit AI and from teachers in class.</p>`;
+      <p class="tiny muted section">Messages are between adults only: staff, families, the principal and the board. Students get help from Kintra Assist and from teachers in class.</p>`;
   }
   function markThreadRead() {
     const r = route(); if (r.parts[0] !== 'messages' || !S.messages) return;
@@ -829,7 +836,7 @@
     })(t0);
   }
   // ---------- knowledge map ----------
-  const mColor = (v, a = 1) => { if (v == null) return 'transparent'; const t = Math.max(0, Math.min(1, (v - 30) / 65)); const h = t < 0.5 ? 340 + (t / 0.5) * 60 : 40 + ((t - 0.5) / 0.5) * 130; return `hsla(${h % 360},85%,${isKid() ? 55 : 62}%,${a})`; };
+  const mColor = (v, a = 1) => { if (v == null) return 'transparent'; const t = Math.max(0, Math.min(1, (v - 30) / 65)); const h = t < 0.5 ? 340 + (t / 0.5) * 60 : 40 + ((t - 0.5) / 0.5) * 130; return `hsla(${h % 360},${isDark() ? 85 : 70}%,${isDark() ? 64 : 40}%,${a})`; };
   const gColor = (g, a = 1) => (g == null ? 'transparent' : mColor(100 - g * 1.4, a));
   const lvlName = { mastered: 'Mastered', learning: 'Getting there', gap: 'Dark star', none: 'Not started' };
   let starSel = null;
@@ -841,7 +848,7 @@
     const gaps = M.filter((c) => c.level === 'gap').sort((a, b) => a.grade - b.grade);
     const sel = M.find((c) => c.id === starSel) || gaps[0] || M[0];
     return `<div class="hero-greet"><div><span class="ai-chip">${icon('orbit')} Knowledge map</span><h1 style="margin-top:10px">${who ? `${esc(who)}'s universe of learning` : 'Your universe of learning'}</h1><p class="muted">Every concept from Kindergarten to now. Bright stars are mastered. Dark stars are the gaps that make new topics feel hard.</p></div></div>
-      <div class="grid g4"><div class="card stat"><div class="l">Constellation</div><div class="v gtext">${pct}%</div></div><div class="card stat"><div class="l">Mastered</div><div class="v">${n('mastered')}</div></div><div class="card stat"><div class="l">Getting there</div><div class="v" style="color:var(--watch)">${n('learning')}</div></div><div class="card stat"><div class="l">Dark stars</div><div class="v" style="color:var(--pink)">${n('gap')}</div></div></div>
+      <div class="grid g4"><div class="card stat"><div class="l">Map lit up</div><div class="v gtext">${pct}%</div></div><div class="card stat"><div class="l">Mastered</div><div class="v">${n('mastered')}</div></div><div class="card stat"><div class="l">Getting there</div><div class="v" style="color:var(--watch)">${n('learning')}</div></div><div class="card stat"><div class="l">Dark stars</div><div class="v" style="color:var(--pink)">${n('gap')}</div></div></div>
       <div class="mapwrap section"><div class="card starcard">${starMap(M, sel && sel.id)}<div class="legend"><span><i class="lg-m"></i>Mastered</span><span><i class="lg-l"></i>Getting there</span><span><i class="lg-g"></i>Dark star</span><span class="muted">Inner ring = Kindergarten · outer = ${esc(S.me.role === 'student' ? S.me.gradeLabel : S.student.gradeLabel)}</span></div></div>
         <div>${sel ? starDetail(sel, M) : ''}
           <div class="card section"><h2>Light these up next</h2>${gaps.length ? `<div class="found">${gaps.slice(0, 5).map((c) => `<a class="fnd" href="${starHref(c)}"><span class="rung">${esc(c.gradeLabel)}</span><span><b>${esc(c.name)}</b><div class="small muted">${c.mastery}% · ${esc(cap(c.branch))}</div></span><span class="small" style="color:var(--teal)">Go →</span></a>`).join('')}</div>` : '<div class="empty">No dark stars. Your sky is lit!</div>'}</div></div></div>`;
@@ -854,7 +861,7 @@
     return `<div class="card"><span class="pill ${c.level === 'mastered' ? 'ok' : c.level === 'learning' ? 'watch' : 'high'}">${lvlName[c.level]}</span><h2 style="margin-top:10px">${esc(c.name)}</h2><p class="small muted">${esc(c.gradeLabel)} · ${esc(cap(c.branch))} · ${c.mastery ?? '–'}% mastery</p>
       <div class="bar" style="margin:8px 0 14px"><i style="width:${c.mastery || 0}%;background:${mColor(c.mastery)}"></i></div>
       ${pre.length ? `<div class="small"><b>Built on</b></div><div class="chips" style="margin:6px 0 12px">${pre.map((p) => `<button class="chip" data-act="star" data-id="${esc(p.id)}"><span class="dot" style="background:${mColor(p.mastery)};color:${mColor(p.mastery)}"></span> ${esc(p.name)}</button>`).join('')}</div>` : ''}
-      ${weakPre.length ? `<p class="small">Orbit AI: <b>${esc(weakPre[0].name)}</b> (${esc(weakPre[0].gradeLabel)}) is still dark. Light that one first and this star gets easier.</p>` : ''}
+      ${weakPre.length ? `<p class="small">Kintra Assist: <b>${esc(weakPre[0].name)}</b> (${esc(weakPre[0].gradeLabel)}) is still dark. Light that one first and this star gets easier.</p>` : ''}
       ${c.lessonId ? `<a class="btn sm" href="${starHref(c)}">${c.level === 'mastered' ? 'Review' : 'Light it up'} →</a>` : ''}</div>`;
   }
   function starMap(M, selId) {
@@ -922,7 +929,7 @@
       <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><h2 style="margin:0">Run a live check</h2><p class="small muted" style="margin:4px 0 0">Warm-up: 4 questions on the earlier-grade ideas this unit needs. Exit ticket: re-checks the weakest ones after your mini-lesson.</p></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="check" data-class="${esc(c.id)}" data-kind="warmup">${icon('bolt')} Launch warm-up</button><button class="btn ghost" data-act="check" data-class="${esc(c.id)}" data-kind="exit">${icon('check')} Exit ticket</button></div></div>
         ${M.checks.length ? `<div class="list section">${M.checks.slice().reverse().map((k) => `<div class="row"><div class="main"><b>${k.kind === 'exit' ? 'Exit ticket' : 'Warm-up'}</b> <span class="tiny muted">${ago(k.at)}</span><div class="small muted">${esc(k.concepts.join(' · '))}</div></div><div style="text-align:right"><b>${k.correctPct ?? '–'}%</b><div class="tiny muted">${k.responded}/${k.of} answered</div></div></div>`).join('')}</div>` : ''}</div>
-      ${M.advice.length ? `<div class="card section"><h2><span>${icon('spark')} Orbit AI recommends</span></h2><div class="list">${M.advice.map((a) => { const s = M.summary.find((x) => x.id === a.conceptId); return `<div class="row" style="align-items:flex-start"><div class="main">${pill(a.kind === 'mini' ? 'high' : 'watch', a.kind === 'mini' ? 'Whole class' : 'Small group')}<div class="small" style="margin-top:6px">${esc(a.text)}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${s.lessonId ? `<a class="btn ghost sm" href="#/foundation/${esc(s.lessonId)}">Open lesson</a>` : ''}<button class="btn sm" data-act="assign" data-class="${esc(c.id)}" data-concept="${esc(a.conceptId)}">Send to ${s.gap}</button></div></div>`; }).join('')}</div></div>` : ''}
+      ${M.advice.length ? `<div class="card section"><h2><span>${icon('spark')} Kintra Assist recommends</span></h2><div class="list">${M.advice.map((a) => { const s = M.summary.find((x) => x.id === a.conceptId); return `<div class="row" style="align-items:flex-start"><div class="main">${pill(a.kind === 'mini' ? 'high' : 'watch', a.kind === 'mini' ? 'Whole class' : 'Small group')}<div class="small" style="margin-top:6px">${esc(a.text)}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${s.lessonId ? `<a class="btn ghost sm" href="#/foundation/${esc(s.lessonId)}">Open lesson</a>` : ''}<button class="btn sm" data-act="assign" data-class="${esc(c.id)}" data-concept="${esc(a.conceptId)}">Send to ${s.gap}</button></div></div>`; }).join('')}</div></div>` : ''}
       <div class="card section tablewrap"><h2>Class heatmap <span class="tiny muted">mastery % per student</span></h2>
         <table class="heat"><thead><tr><th>Student</th>${M.cols.map((x, i) => `<th class="${i === pre ? 'split' : ''}"><div>${esc(x.name)}</div><span>${esc(x.gradeLabel)}</span></th>`).join('')}</tr>
           <tr class="sum"><td class="tiny muted">Class gap</td>${M.summary.map((s, i) => `<td class="${i === pre ? 'split' : ''}"><b style="color:${s.gapPct >= 35 ? 'var(--high)' : s.gapPct >= 20 ? 'var(--watch)' : 'var(--ok)'}">${s.gapPct}%</b></td>`).join('')}</tr></thead>
@@ -949,7 +956,7 @@
     return `<div class="hero-greet"><div><span class="ai-chip">${icon('class')} District view</span><h1 style="margin-top:10px">${esc(B.name)}</h1><p class="muted">${T.schools} schools · ${T.students.toLocaleString()} students · ${esc(S.me.name)}, ${esc(S.me.title || '')}</p></div><a class="btn" href="#/review">${icon('book')} Plan review season</a></div>
       ${brief(`${B.insights.length} things need the board's attention this week. The biggest: <b>${esc(B.insights[0].title)}</b>.`)}
       <div class="grid g4"><div class="card stat"><div class="l">Attendance</div><div class="v">${T.attendance}%</div></div><div class="card stat"><div class="l">Students at risk</div><div class="v" style="color:var(--watch)">${T.atRisk}%</div></div><div class="card stat"><div class="l">Median alert → family</div><div class="v">${T.medianResponse}h</div></div><div class="card stat"><div class="l">Alerts → meetings held</div><div class="v">${T.followThrough}%</div></div></div>
-      <div class="card section"><h2><span>${icon('alert')} Bottlenecks & pain points</span><span class="ai-chip">Orbit AI</span></h2><div class="grid g2">${B.insights.map((i) => `<div class="insight ${i.level}"><b>${esc(i.title)}</b><p class="small">${esc(i.body)}</p><div style="display:flex;gap:8px;flex-wrap:wrap">${i.action ? `<a class="btn sm" href="#/review?exam=${esc(i.action.exam)}">Send review pack</a>` : ''}${i.school ? `<a class="btn ghost sm" href="#/school/${esc(i.school)}">Open school</a>` : ''}</div></div>`).join('')}</div></div>
+      <div class="card section"><h2><span>${icon('alert')} Bottlenecks & pain points</span><span class="ai-chip">Kintra Assist</span></h2><div class="grid g2">${B.insights.map((i) => `<div class="insight ${i.level}"><b>${esc(i.title)}</b><p class="small">${esc(i.body)}</p><div style="display:flex;gap:8px;flex-wrap:wrap">${i.action ? `<a class="btn sm" href="#/review?exam=${esc(i.action.exam)}">Send review pack</a>` : ''}${i.school ? `<a class="btn ghost sm" href="#/school/${esc(i.school)}">Open school</a>` : ''}</div></div>`).join('')}</div></div>
       <div class="card section tablewrap"><h2>Schools</h2><table><thead><tr><th>School</th>${cols.map((c) => `<th>${c[1]}</th>`).join('')}<th>Test readiness</th></tr></thead><tbody>
         ${B.schools.map((s) => `<tr><td><a href="#/school/${esc(s.id)}"><b>${esc(s.name)}</b></a>${s.live ? ' <span class="pill ok">live demo</span>' : ''}<div class="tiny muted">${s.type === 'elementary' ? 'Elementary · K–8' : 'Secondary · 9–12'}</div></td>${cols.map(([k, , f, rate]) => `<td>${rate ? `<span class="pill ${rate(s[k])}">${f(s[k])}</span>` : f(s[k])}</td>`).join('')}<td>${Object.entries(s.readiness).map(([e, v]) => `<div class="tiny">${esc(B.exams.find((x) => x.id === e).short)} <b style="color:${mColor(v)}">${v}%</b></div>`).join('')}</td></tr>`).join('')}</tbody></table></div>
       <div class="card section tablewrap"><h2>Foundation gaps across the board <span class="tiny muted">% of students below 60% mastery</span></h2><table class="heat"><thead><tr><th>School</th>${B.concepts.map((c) => `<th><div>${esc(c.name)}</div><span>${esc(c.gradeLabel)}</span></th>`).join('')}</tr></thead><tbody>
@@ -1007,19 +1014,19 @@
       ${[lo, (lo + hi) / 2, hi].map((v) => `<line x1="${pad}" x2="${W - pad}" y1="${Y(v)}" y2="${Y(v)}" stroke="currentColor" stroke-opacity=".1"/><text x="4" y="${Y(v) + 4}" font-size="11" fill="currentColor" fill-opacity=".55">${Math.round(v)}%</text>`).join('')}
       <polygon points="${X(0)},${H - pad} ${pts} ${X(t.length - 1)},${H - pad}" fill="url(#tf)"/>
       <polyline points="${pts}" fill="none" stroke="url(#tg)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-      ${t.map((x, i) => `<circle cx="${X(i)}" cy="${Y(x.avg)}" r="4" fill="#06071A" stroke="#A99FFF" stroke-width="2"/><text x="${X(i)}" y="${H - 8}" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity=".55">${esc(x.month)}</text>`).join('')}
+      ${t.map((x, i) => `<circle cx="${X(i)}" cy="${Y(x.avg)}" r="4" style="fill:var(--bg-2)" stroke="#8E84F4" stroke-width="2"/><text x="${X(i)}" y="${H - 8}" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity=".55">${esc(x.month)}</text>`).join('')}
       <text x="${X(t.length - 1)}" y="${Y(t[t.length - 1].avg) - 12}" font-size="13" font-weight="700" text-anchor="end" fill="currentColor">${t[t.length - 1].avg}%</text></svg>`;
   }
   function emailPage() {
-    return `<h1>Email log</h1><p class="muted">Every email OrbitLearn sent: at-risk alerts, meeting confirmations and urgent alerts. In this demo, emails are logged here instead of being delivered.</p>
+    return `<h1>Email log</h1><p class="muted">Every email Kintra sent: at-risk alerts, meeting confirmations and urgent alerts. In this demo, emails are logged here instead of being delivered.</p>
       <div class="card">${S.outbox.length ? `<div class="list">${S.outbox.map((e) => `<details class="row" style="display:block"><summary style="cursor:pointer"><b>${esc(e.subject)}</b> <span class="small muted">to ${esc(e.toName)} &lt;${esc(e.to)}&gt; · ${ago(e.createdAt)}</span></summary><div class="email">${esc(e.body)}</div></details>`).join('')}</div>` : '<div class="empty">No emails yet. Try “Run daily risk check” or notify a family from a student row.</div>'}</div>`;
   }
   function settingsPage() {
     const lv = S.school.level;
-    const opts = [['kinder', 'Kindergarten', 'Little Orbit: big read-aloud lesson cards, stickers, one-tap answers.'], ['elementary', 'Elementary', 'Parent-first dashboards, simple recaps, badges and streaks.'], ['middle', 'Middle school', 'Recaps and study tools, badges for engagement.'], ['high', 'High school', 'Detailed recaps, Study Vault, parent alerts for grades and absences.'], ['university', 'College & university', 'Full lecture digests; advisors replace parents; study groups.']];
+    const opts = [['kinder', 'Kindergarten', 'Kintra Kids: big read-aloud lesson cards, stickers, one-tap answers.'], ['elementary', 'Elementary', 'Parent-first dashboards, simple recaps, badges and streaks.'], ['middle', 'Middle school', 'Recaps and study tools, badges for engagement.'], ['high', 'High school', 'Detailed recaps, Study Vault, parent alerts for grades and absences.'], ['university', 'College & university', 'Full lecture digests; advisors replace parents; study groups.']];
     const b = brandOf();
     return `<h1>Settings</h1>
-      <form class="card" data-form="brand"><h2>School branding</h2><p class="small muted">Your mascot and colours show across OrbitLearn for every student, family and teacher.</p>
+      <form class="card" data-form="brand"><h2>School branding</h2><p class="small muted">Your mascot and colours show across Kintra for every student, family and teacher.</p>
         <div class="grid g2" style="align-items:start"><div>
           <label>Mascot</label><div class="mascots">${Object.entries(S.mascots || {}).map(([k, e]) => `<label class="mc"><input type="radio" name="mascot" value="${k}" ${b.mascot === k ? 'checked' : ''}><span>${e}</span></label>`).join('')}</div>
           <label for="mn">Team name</label><input id="mn" name="mascotName" type="text" maxlength="40" value="${esc(b.mascotName || '')}">
@@ -1029,7 +1036,7 @@
           <button class="btn" style="margin-top:12px">Save branding</button></div>
           <div><label>Preview a seasonal surprise</label><div class="chips">${Object.entries(SEASONS).map(([k, x]) => `<button type="button" class="chip" data-act="preview" data-k="${k}">${x.icon || '🕊️'} ${esc(x.label)}</button>`).join('')}</div>
           <p class="small muted" style="margin-top:12px">Today’s is <b>${esc(SEASONS[seasonKey()].label)}</b>. It plays once when someone opens their home or a class, then fades back to that class’s own look. Remembrance Day is shown quietly, with no animation or jokes.</p></div></div></form>
-      <form class="card section" data-form="level"><h2>School level</h2><p class="small muted">Sets the default for school-wide screens. Each student’s own view already adapts to their grade: Kindergarten gets Little Orbit, university gets a focused professional layout.</p>
+      <form class="card section" data-form="level"><h2>School level</h2><p class="small muted">Sets the default for school-wide screens. Each student’s own view already adapts to their grade: Kindergarten gets Kintra Kids, university gets a focused professional layout.</p>
         ${opts.map(([v, l, d]) => `<label class="check" style="align-items:flex-start"><input type="radio" name="level" value="${v}" ${lv === v ? 'checked' : ''}> <span><b>${l}</b><br><span class="small muted">${d}</span></span></label>`).join('')}
         <button class="btn" style="margin-top:12px">Save</button></form>
       <div class="card section"><h2>Demo data</h2><p class="small muted">Reset the school back to the original sample data. Everyone will be signed out.</p><button class="btn danger" data-act="reset">Reset demo</button></div>`;
@@ -1064,6 +1071,7 @@
       else if (act === 'bell') { panelOpen = !panelOpen; render(); if (panelOpen && S.notifications.some((n) => !n.read)) { await api('/api/notifications/read', {}); S.notifications.forEach((n) => (n.read = true)); } }
       else if (act === 'listen') { e.preventDefault(); e.stopPropagation(); speak(t.dataset.text); }
       else if (act === 'season') playSeason(null, true);
+      else if (act === 'dark') { try { localStorage.setItem('kintra-dark', prefersDark() ? '0' : '1'); } catch (err) { /* storage unavailable */ } render(); }
       else if (act === 'child') { await api('/api/child', { id: t.dataset.id }); await refresh(); }
       else if (act === 'todo') { const on = t.checked; try { localStorage.setItem('ol-todo-' + S.me.id + weekKey() + t.dataset.id, on ? '1' : '0'); } catch (err) { /* storage unavailable */ } t.closest('.todo').classList.toggle('done', on); }
       else if (act === 'digest') digestPreview();

@@ -15,7 +15,7 @@ server.listen(0, async () => {
   try {
     for (const role of ['student', 'parent', 'teacher', 'admin']) ok((await call(role, 'POST', '/api/login', { demo: role })).status === 200, 'login ' + role);
     ok((await call('x', 'GET', '/api/bootstrap')).status === 401, 'unauth blocked');
-    ok((await call('x', 'POST', '/api/login', { email: 'student@orbitlearn.demo', password: 'nope' })).status === 401, 'bad pw');
+    ok((await call('x', 'POST', '/api/login', { email: 'student@kintra.demo', password: 'nope' })).status === 401, 'bad pw');
     const s = (await call('student', 'GET', '/api/bootstrap')).body;
     ok(s.me.name === 'Tyler Brooks', 'student is Tyler');
     ok(s.recaps.length === 9 && s.recaps[0].flashcards.length > 0 && s.recaps[0].quiz.length > 0, 'recaps with cards+quiz');
@@ -29,10 +29,10 @@ server.listen(0, async () => {
     ok(a.body.counts.high >= 2 && a.body.counts.students === 19, 'admin counts ' + JSON.stringify(a.body.counts));
     // levels + foundations
     ok(s.labels.theme === 'orbit' && s.recaps.some((r) => r.foundations.length) && Object.keys(s.foundations).length > 3, 'foundations for grade 10');
-    ok((await call('kid', 'POST', '/api/login', { email: 'kinder@orbitlearn.demo', password: 'demo1234' })).status === 200, 'kinder login');
+    ok((await call('kid', 'POST', '/api/login', { email: 'kinder@kintra.demo', password: 'demo1234' })).status === 200, 'kinder login');
     const k = (await call('kid', 'GET', '/api/bootstrap')).body;
     ok(k.labels.theme === 'kinder' && k.labels.band === 'kinder' && k.recaps.length === 3, 'kinder view');
-    ok((await call('uni', 'POST', '/api/login', { email: 'uni@orbitlearn.demo', password: 'demo1234' })).status === 200, 'uni login');
+    ok((await call('uni', 'POST', '/api/login', { email: 'uni@kintra.demo', password: 'demo1234' })).status === 200, 'uni login');
     const un = (await call('uni', 'GET', '/api/bootstrap')).body;
     ok(un.labels.theme === 'pro' && un.labels.guardian === 'Advisor' && Object.values(un.foundations).some((f) => f.gradeLabel === 'Grade 10'), 'uni bridges to grade 10');
     let sr = await call('uni', 'POST', '/api/assistant', { message: "I don't understand DNA replication, explain it simpler" });

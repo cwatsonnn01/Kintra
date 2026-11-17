@@ -65,8 +65,8 @@ function addLevels(db) {
   db.classes.forEach((c) => { c.grade = 10; });
   db.recaps.forEach((r) => { r.concepts = TAGS[r.title] || []; });
 
-  const lee = add({ role: 'teacher', name: 'Ms. Lee', email: 'lee@orbitlearn.demo' });
-  const prof = add({ role: 'teacher', name: 'Prof. Adeyemi', email: 'prof@orbitlearn.demo' });
+  const lee = add({ role: 'teacher', name: 'Ms. Lee', email: 'lee@kintra.demo' });
+  const prof = add({ role: 'teacher', name: 'Prof. Adeyemi', email: 'prof@kintra.demo' });
   db.classes.push(
     { id: 'kroom', name: 'Kindergarten Room 3', subject: 'Discovery', teacherId: lee.id, room: 'Room 3', color: '#f59e0b', grade: 0 },
     { id: 'bio201', name: 'BIO 201 Cell Biology', subject: 'Cell Biology', teacherId: prof.id, room: 'Hall B', color: '#14b8a6', grade: 13 },
@@ -75,15 +75,15 @@ function addLevels(db) {
   const kids = [['Mia', 'Chen', 'Lily Chen'], ['Leo', 'Garcia', 'Rosa Garcia'], ['Ari', 'Singh', 'Priya Singh'], ['Zoe', 'Kim', 'Daniel Kim']];
   const kidIds = [];
   kids.forEach(([f, l, p], i) => {
-    const s = add({ role: 'student', name: `${f} ${l}`, grade: 0, email: i === 0 ? 'kinder@orbitlearn.demo' : `${f.toLowerCase()}.k@orbitlearn.demo` });
-    add({ role: 'parent', name: p, childId: s.id, email: i === 0 ? 'kparent@orbitlearn.demo' : `${p.split(' ')[0].toLowerCase()}.kparent@orbitlearn.demo` });
+    const s = add({ role: 'student', name: `${f} ${l}`, grade: 0, email: i === 0 ? 'kinder@kintra.demo' : `${f.toLowerCase()}.k@kintra.demo` });
+    add({ role: 'parent', name: p, childId: s.id, email: i === 0 ? 'kparent@kintra.demo' : `${p.split(' ')[0].toLowerCase()}.kparent@kintra.demo` });
     kidIds.push(s.id);
   });
   // Dana Brooks has two children: Tyler (Grade 10) and Emma (Kindergarten), to show the family child switcher.
-  const dana = db.users.find((u) => u.email === 'parent@orbitlearn.demo');
-  if (dana) { const emma = add({ role: 'student', name: 'Emma Brooks', grade: 0, email: 'emma.k@orbitlearn.demo' }); kidIds.push(emma.id); dana.childIds = [dana.childId, emma.id]; }
+  const dana = db.users.find((u) => u.email === 'parent@kintra.demo');
+  if (dana) { const emma = add({ role: 'student', name: 'Emma Brooks', grade: 0, email: 'emma.k@kintra.demo' }); kidIds.push(emma.id); dana.childIds = [dana.childId, emma.id]; }
   const unis = [['Jordan', 'Reyes'], ['Amara', 'Okoye'], ['Ben', 'Thompson'], ['Sana', 'Malik']];
-  const uniIds = unis.map(([f, l], i) => add({ role: 'student', name: `${f} ${l}`, grade: 13, email: i === 0 ? 'uni@orbitlearn.demo' : `${f.toLowerCase()}.u@orbitlearn.demo` }).id);
+  const uniIds = unis.map(([f, l], i) => add({ role: 'student', name: `${f} ${l}`, grade: 13, email: i === 0 ? 'uni@kintra.demo' : `${f.toLowerCase()}.u@kintra.demo` }).id);
   db.enrollments.kroom = kidIds;
   db.enrollments.bio201 = uniIds;
 
@@ -120,7 +120,7 @@ function addLevels(db) {
     const gen = ai.generateRecap({ subject: l.subject, title: l.title, notes: l.notes, level: band(l.grade) }, []);
     return { id: 'lib' + i, ...l, gradeLabel: gradeLabel(l.grade), summary: ai.summarize(l.notes, 4), keyTerms: gen.keyTerms, flashcards: gen.flashcards, quiz: gen.quiz };
   });
-  add({ role: 'board', name: 'Dr. Amara Okoye', title: 'Superintendent of Education', email: 'board@orbitlearn.demo' });
+  add({ role: 'board', name: 'Dr. Amara Okoye', title: 'Superintendent of Education', email: 'board@kintra.demo' });
   return require('./social').seed(require('./insights').seed(db));
 }
 

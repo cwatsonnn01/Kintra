@@ -1,6 +1,6 @@
-# OrbitLearn
+# Kintra
 
-**Keep every student in orbit.** OrbitLearn is a classroom platform that acts before report cards do: it spots students who are slipping, alerts parents and teachers with an action plan and a one-click meeting link, and turns every class into an AI recap that builds into a lifelong study guide.
+**Everything education. Beautifully connected.** Kintra is a classroom platform that acts before report cards do: it spots students who are slipping, alerts parents and teachers with an action plan and a one-click meeting link, and turns every class into an AI recap that builds into a lifelong study guide.
 
 This repository is a working demo built by Framelight Tech Solutions Inc.
 
@@ -10,10 +10,10 @@ Open the site and pick a role on the sign-in page, or sign in with any demo acco
 
 | Role | Email | What to try |
 | --- | --- | --- |
-| Student | student@orbitlearn.demo | Study Vault, flashcards, quizzes, exam prep, AI assistant |
-| Parent | parent@orbitlearn.demo | At-risk alert with action plan, book a meeting, parent hub |
-| Teacher | teacher@orbitlearn.demo | Roster risk flags, notify a parent, generate and approve an AI recap, grade, attendance |
-| School admin | admin@orbitlearn.demo | School dashboard, daily risk check, urgent alerts, email log, school level switch |
+| Student | student@kintra.demo | Study Vault, flashcards, quizzes, exam prep, AI assistant |
+| Parent | parent@kintra.demo | At-risk alert with action plan, book a meeting, parent hub |
+| Teacher | teacher@kintra.demo | Roster risk flags, notify a parent, generate and approve an AI recap, grade, attendance |
+| School admin | admin@kintra.demo | School dashboard, daily risk check, urgent alerts, email log, school level switch |
 
 ## Features
 

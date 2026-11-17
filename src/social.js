@@ -8,6 +8,7 @@ const clip = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' 
 
 function seed(db) {
   db.school.district = 'Lakeshore Valley DSB (demo)';
+  db.brand = 'kintra';
   db.school.brand = { mascot: 'owl', mascotName: 'Northview Owls', primary: '#1F4FD8', secondary: '#F5B700', useColors: false, seasonal: true };
   const looks = {
     bio: { theme: 'forest', emoji: '🧬', banner: 'Welcome, scientists! Lab coats on Thursday.' },
@@ -20,12 +21,12 @@ function seed(db) {
 
   db.messages = [];
   const by = (email) => db.users.find((u) => u.email === email);
-  const rivera = by('teacher@orbitlearn.demo'), dana = by('parent@orbitlearn.demo'), admin = by('admin@orbitlearn.demo'), board = by('board@orbitlearn.demo');
+  const rivera = by('teacher@kintra.demo'), dana = by('parent@kintra.demo'), admin = by('admin@kintra.demo'), board = by('board@kintra.demo');
   const chen = db.users.find((u) => u.role === 'teacher' && /Chen/.test(u.name));
   const now = Date.now(), H = 3600000;
   const add = (from, to, body, hoursAgo, read = true) => from && to && db.messages.push({ id: require('crypto').randomBytes(6).toString('hex'), from: from.id, to: to.id, body, at: now - hoursAgo * H, read });
   add(dana, rivera, 'Hi Ms. Rivera, Tyler said he’s finding the cell unit hard. Is there anything we can do at home?', 30);
-  add(rivera, dana, 'Thanks for reaching out, Dana! The warm-up showed he’s missing some Grade 7 cell basics. I sent him a 4-minute refresher in OrbitLearn. Doing it together tonight would really help.', 28);
+  add(rivera, dana, 'Thanks for reaching out, Dana! The warm-up showed he’s missing some Grade 7 cell basics. I sent him a 4-minute refresher in Kintra. Doing it together tonight would really help.', 28);
   add(dana, rivera, 'Will do. Thank you for catching it so early!', 27);
   add(chen, rivera, 'Saw Tyler’s map: Grade 8 graphing is dark for him in Math too. Want to tag-team a catch-up plan?', 20);
   add(rivera, chen, 'Yes! Let’s book his mom for a joint meeting. I’ll send a slot.', 19);
@@ -34,7 +35,7 @@ function seed(db) {
   return db;
 }
 
-// Who a user may message. Students are not in staff/family messaging; they use Orbit AI and their teachers in class.
+// Who a user may message. Students are not in staff/family messaging; they use Kintra Assist and their teachers in class.
 function contacts(db, u) {
   const teachersOf = (classIds) => db.users.filter((x) => x.role === 'teacher' && db.classes.some((c) => classIds.includes(c.id) && (c.teacherId === x.id || c.coTeacherId === x.id)));
   const admins = db.users.filter((x) => x.role === 'admin');

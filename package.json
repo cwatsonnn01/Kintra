@@ -1,7 +1,7 @@
 {
   "name": "orbitlearn",
   "version": "1.0.0",
-  "description": "OrbitLearn: proactive classroom platform demo (alerts, AI recaps, study vault).",
+  "description": "Kintra: everything education, beautifully connected. Classroom-to-board platform demo.",
   "main": "src/server.js",
   "private": true,
   "scripts": { "start": "node src/server.js", "test": "node test/api.js" },

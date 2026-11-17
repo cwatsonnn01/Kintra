@@ -1,4 +1,4 @@
-// OrbitLearn demo server. Node built-ins only: no npm install needed.
+// Kintra demo server. Node built-ins only: no npm install needed.
 'use strict';
 const http = require('http');
 const fs = require('fs');
@@ -22,7 +22,7 @@ function load() {
   try {
     db = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     // Re-seed demos older than 3 days so dates stay fresh.
-    if (!db.seededAt || Date.now() - db.seededAt > 3 * 86400000 || !db.mastery || !db.board || !db.messages) throw new Error('stale');
+    if (!db.seededAt || Date.now() - db.seededAt > 3 * 86400000 || !db.mastery || !db.board || !db.messages || db.brand !== 'kintra') throw new Error('stale');
   } catch {
     db = seed();
     save();
@@ -87,7 +87,7 @@ function notifyRisk(sid, byUser, auto = false) {
   for (const p of parentsOf(sid)) {
     const body = `${s.name} needs some support right now:\n- ${r.reasons.join('\n- ')}\n\nAction plan:\n- ${plan.join('\n- ')}\n\nBook a time with ${teacher.name}: ${scheduleLink(teacher.id, sid)}`;
     notify(p.id, 'risk', `${s.name.split(' ')[0]} needs support`, r.reasons.join(' · '), `#/meetings?teacher=${teacher.id}&student=${sid}`);
-    email(p.id, `OrbitLearn: ${s.name.split(' ')[0]} needs some support`, `Hi ${p.name.split(' ')[0]},\n\n${body}\n\n– ${auto ? 'OrbitLearn on behalf of ' : ''}${teacher.name}, ${db.school.name}`);
+    email(p.id, `Kintra: ${s.name.split(' ')[0]} needs some support`, `Hi ${p.name.split(' ')[0]},\n\n${body}\n\n– ${auto ? 'Kintra on behalf of ' : ''}${teacher.name}, ${db.school.name}`);
   }
   notify(sid, 'nudge', 'Let’s get back on track', plan[0] || 'Check your assignments and recaps.', '#/home');
   db.riskNotices[sid] = { at: Date.now(), by: byUser.id, level: r.level };
@@ -207,7 +207,7 @@ function bootstrap(u) {
 const routes = {
   'POST /api/login': (body) => {
     let u;
-    if (body.demo) u = db.users.find((x) => x.email === `${body.demo}@orbitlearn.demo`);
+    if (body.demo) u = db.users.find((x) => x.email === `${body.demo}@kintra.demo`);
     else u = db.users.find((x) => x.email.toLowerCase() === String(body.email || '').toLowerCase().trim() && x.password === body.password);
     if (!u) throw httpErr(401, 'That email and password don’t match. Try one of the demo accounts.');
     const token = crypto.randomBytes(24).toString('hex');
@@ -388,7 +388,7 @@ const routes = {
   'POST /api/check': (b, u) => {
     const c = cls(b.classId);
     if (!c || u.role !== 'teacher' || !teaches(u, c)) throw httpErr(403, 'Not your class');
-    const live = db.users.filter((x) => x.email === 'student@orbitlearn.demo').map((x) => x.id);
+    const live = db.users.filter((x) => x.email === 'student@kintra.demo').map((x) => x.id);
     const k = insights.runCheck(db, c, b.kind === 'exit' ? 'exit' : 'warmup', foundationLesson, live);
     for (const sid of db.enrollments[c.id]) if (!k.responses[sid]) notify(sid, 'check', `${k.kind === 'exit' ? 'Exit ticket' : 'Warm-up'} is live in ${c.subject}`, `${k.questions.length} quick questions. Takes 2 minutes.`, `#/check/${k.id}`);
     return { ok: true, id: k.id, correctPct: k.correctPct, perConcept: k.perConcept };
@@ -416,7 +416,7 @@ const routes = {
     const ids = b.schoolId === 'all' ? insights.boardView(db).schools.filter((s) => exam && s.type === exam.type).map((s) => s.id) : [b.schoolId];
     if (!exam) throw httpErr(400, 'Unknown exam');
     for (const sid of ids) db.board.packs.unshift({ id: id(), schoolId: sid, exam: exam.id, at: Date.now() });
-    if (ids.includes('northview')) for (const a of db.users.filter((x) => x.role === 'admin')) { notify(a.id, 'board', `Review pack from the board: ${exam.short}`, `${u.name} sent a targeted ${exam.short} review pack based on your school's foundation gaps.`, '#/gaps'); email(a.id, `Board review pack: ${exam.name}`, `Hi ${a.name.split(' ')[1] || a.name},\n\nThe board has sent Northview a ${exam.name} review pack, built from your school's foundation gaps in OrbitLearn. Teachers can assign it from the Knowledge map tab of each class.\n\n– ${u.name}, ${u.title}`); }
+    if (ids.includes('northview')) for (const a of db.users.filter((x) => x.role === 'admin')) { notify(a.id, 'board', `Review pack from the board: ${exam.short}`, `${u.name} sent a targeted ${exam.short} review pack based on your school's foundation gaps.`, '#/gaps'); email(a.id, `Board review pack: ${exam.name}`, `Hi ${a.name.split(' ')[1] || a.name},\n\nThe board has sent Northview a ${exam.name} review pack, built from your school's foundation gaps in Kintra. Teachers can assign it from the Knowledge map tab of each class.\n\n– ${u.name}, ${u.title}`); }
     return { ok: true, sent: ids.length };
   },
   'POST /api/notifications/read': (b, u) => {
@@ -550,5 +550,5 @@ function api(rq, rs, url) {
   });
 }
 
-if (require.main === module) server.listen(PORT, () => console.log(`OrbitLearn running on :${PORT}`));
+if (require.main === module) server.listen(PORT, () => console.log(`Kintra running on :${PORT}`));
 module.exports = { server, getDb: () => db, routes };

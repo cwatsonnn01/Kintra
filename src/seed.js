@@ -42,10 +42,10 @@ function seed(level = 'high') {
   const users = [];
   const add = (u) => { users.push({ id: id(), password: pw, ...u }); return users[users.length - 1]; };
 
-  const admin = add({ role: 'admin', name: 'Principal Grant', email: 'admin@orbitlearn.demo' });
-  const rivera = add({ role: 'teacher', name: 'Ms. Rivera', email: 'teacher@orbitlearn.demo' });
-  const chen = add({ role: 'teacher', name: 'Mr. Chen', email: 'chen@orbitlearn.demo' });
-  const okafor = add({ role: 'teacher', name: 'Mrs. Okafor', email: 'okafor@orbitlearn.demo' });
+  const admin = add({ role: 'admin', name: 'Principal Grant', email: 'admin@kintra.demo' });
+  const rivera = add({ role: 'teacher', name: 'Ms. Rivera', email: 'teacher@kintra.demo' });
+  const chen = add({ role: 'teacher', name: 'Mr. Chen', email: 'chen@kintra.demo' });
+  const okafor = add({ role: 'teacher', name: 'Mrs. Okafor', email: 'okafor@kintra.demo' });
 
   const classes = [
     { id: 'bio', name: 'Biology 10', subject: 'Biology', teacherId: rivera.id, room: 'Room 204', color: '#16a34a' },
@@ -72,11 +72,11 @@ function seed(level = 'high') {
   roster.forEach(([first, last, parentName, profile], i) => {
     const s = add({
       role: 'student', name: `${first} ${last}`, grade: 10,
-      email: i === 0 ? 'student@orbitlearn.demo' : `${first.toLowerCase()}@orbitlearn.demo`,
+      email: i === 0 ? 'student@kintra.demo' : `${first.toLowerCase()}@kintra.demo`,
     });
     add({
       role: 'parent', name: parentName, childId: s.id,
-      email: i === 0 ? 'parent@orbitlearn.demo' : `${parentName.split(' ')[0].toLowerCase()}.parent@orbitlearn.demo`,
+      email: i === 0 ? 'parent@kintra.demo' : `${parentName.split(' ')[0].toLowerCase()}.parent@kintra.demo`,
     });
     students.push(s);
     profiles[s.id] = profile;
